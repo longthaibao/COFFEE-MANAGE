@@ -489,6 +489,46 @@ BEGIN
         emp_mid AS 'Manager_ID';
 END //
 
+CREATE PROCEDURE VIEWALLCUSTOMER()
+BEGIN
+	SELECT * FROM csdl_database.customer;
+END //
+
+
+CREATE PROCEDURE INSERTCUSTOMER(
+	IN p_phone varchar(12),
+    IN p_name varchar(30),
+    IN p_score int
+)
+BEGIN
+	 -- Insert customer information
+     insert into customer(phone,`name`,score)
+     values( p_phone, convert( p_name using utf8mb4) , p_score);
+END //
+
+CREATE PROCEDURE `UPDATECUSTOMER`(
+    IN p_phone VARCHAR(10),
+    IN p_new_phone VARCHAR(10)
+)
+BEGIN
+
+    -- Update customer information
+    UPDATE customer
+    SET
+        phone = CONVERT(p_new_phone USING utf8mb4)
+    WHERE
+        phone = p_phone;
+END //
+
+CREATE PROCEDURE DELETECUSTOMER(
+    IN p_phone VARCHAR(10)
+)
+BEGIN
+
+    -- Delete customer information
+    DELETE FROM customer
+    WHERE phone = p_phone;
+END //
 
 
 DELIMITER ;
