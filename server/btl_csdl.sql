@@ -506,7 +506,7 @@ BEGIN
      values( p_phone, convert( p_name using utf8mb4) , p_score);
 END //
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `UPDATECUSTOMER`(
+CREATE PROCEDURE `UPDATECUSTOMER`(
     IN p_phone VARCHAR(10),
     IN p_new_phone VARCHAR(10)
 )
