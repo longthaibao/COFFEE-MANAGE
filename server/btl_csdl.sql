@@ -529,6 +529,25 @@ BEGIN
     DELETE FROM customer
     WHERE phone = p_phone;
 END //
+CREATE PROCEDURE showNV(IN job_type VARCHAR(45))
+BEGIN
+SELECT 
+        e.`ID`,
+        e.`employee_name`,
+        e.`employee_gender`,
+        e.`employee_email`,
+        e.`employee_SID`,
+        e.`employee_MID`
+    FROM 
+        `CSDL_database`.`employee` e
+    JOIN 
+        `CSDL_database`.`employee_job` ej ON e.`ID` = ej.`employee_job_ID`
+    JOIN 
+        `CSDL_database`.`job_role` jr ON ej.`employee_job_JID` = jr.`JID`
+    WHERE 
+        jr.`job_type` = job_type;
+END//
+
 
 
 DELIMITER ;
