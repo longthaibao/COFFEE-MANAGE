@@ -1,8 +1,8 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 import Table from "@mui/material/Table";
+import { red } from "@mui/material/colors";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -11,6 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import axios from "axios";
+const custom = red[100];
 const currencies = [
   {
     value: "Quản lý",
@@ -53,7 +54,18 @@ function ShowEmp() {
   };
   return (
     <div className="wrapper m-7">
-      <h3>Chọn một vị trí công việc</h3>
+      <h3
+        style={{
+          fontSize: "70px",
+          fontWeight: "600",
+          backgroundImage: "linear-gradient(to left, #553c9a, #b393d3)",
+          backgroundClip: "text",
+          textShadow:
+            "0px 0px 5px #b393d3, 0px 0px 10px #b393d3, 0px 0px 10px #b393d3,0px 0px 20px #b393d3",
+        }}
+      >
+        Employee
+      </h3>
       <Box
         className="m-8"
         component="form"
@@ -85,7 +97,20 @@ function ShowEmp() {
             ))}
           </TextField>
         </div>
-        <Button color="primary" variant="outlined" onClick={handleSubmit}>
+        <Button
+          style={{
+            backgroundColor: "#1dc1ff",
+            color: "#FFFFFF",
+            fontFamily: "sans-serif",
+            border: "1px solid #1899D6",
+            fontWeight: 700,
+            outline: "none",
+            borderWidth: "0 0 4px",
+            borderRadius: "16px",
+          }}
+          variant="contained"
+          onClick={handleSubmit}
+        >
           Tìm kiếm
         </Button>
       </Box>
@@ -93,11 +118,35 @@ function ShowEmp() {
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell>Loại công việc</TableCell>
-              <TableCell align="right">ID</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Gender</TableCell>
-              <TableCell align="right">Email</TableCell>
+              <TableCell
+                style={{ color: "#ffffff", backgroundColor: "#324960" }}
+              >
+                Loại công việc
+              </TableCell>
+              <TableCell
+                align="center"
+                style={{ color: "#ffffff", backgroundColor: "#4FC3A1" }}
+              >
+                ID
+              </TableCell>
+              <TableCell
+                align="center"
+                style={{ color: "#ffffff", backgroundColor: "#324960" }}
+              >
+                Name
+              </TableCell>
+              <TableCell
+                align="center"
+                style={{ color: "#ffffff", backgroundColor: "#4FC3A1" }}
+              >
+                Gender
+              </TableCell>
+              <TableCell
+                align="center"
+                style={{ color: "#ffffff", backgroundColor: "#324960" }}
+              >
+                Email
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -107,10 +156,10 @@ function ShowEmp() {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell>{job_typeOnClick}</TableCell>
-                <TableCell align="right">{row.ID}</TableCell>
-                <TableCell align="right">{row.employee_name}</TableCell>
-                <TableCell align="right">{row.employee_gender}</TableCell>
-                <TableCell align="right">{row.employee_email}</TableCell>
+                <TableCell align="center">{row.ID}</TableCell>
+                <TableCell align="center">{row.employee_name}</TableCell>
+                <TableCell align="center">{row.employee_gender}</TableCell>
+                <TableCell align="center">{row.employee_email}</TableCell>
               </TableRow>
             ))}
           </TableBody>

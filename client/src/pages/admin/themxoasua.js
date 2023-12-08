@@ -22,6 +22,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import apiEndpoints from './../../components/Customer.js'; // Assuming you store your hooks in an 'api.js' file
 
+import Row from 'react-bootstrap/Row';
 
 const Themxoasua = () => {
 	const [validationErrors, setValidationErrors] = useState({});
@@ -279,9 +280,20 @@ const Themxoasua = () => {
 
 	return (
 		<Container>
-			<Box >
-				<MaterialReactTable table={table} />
-			</Box>
+			<Row>
+				<h1 style={{ fontFamily: 'Montserrat', fontWeight: 'bold', fontSize: '30px', textAlign: 'center' }}>Quản lý thông tin khách hàng</h1>
+			</Row>
+			<Row style={{ marginTop: '20px' }}>
+				<div style={{
+					overflowX: 'auto',
+					width: '100%',
+					padding: '16px',
+					minWidth: '320px', // Set a minimum width if needed
+				}} >
+					<MaterialReactTable style={{ minWidth: '1000px' }} table={table} />
+				</div>
+			</Row>
+
 
 		</Container>
 
