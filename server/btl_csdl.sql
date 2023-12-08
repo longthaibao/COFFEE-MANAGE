@@ -241,5 +241,3 @@ CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
     FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`),
     FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun` (`KID`)
 );
-
-
