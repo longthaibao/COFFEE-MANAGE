@@ -2,10 +2,10 @@ import React from "react";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router-dom";
 import {
-  HiOutlineViewGrid,
-  HiOutlineLogout,
-  HiOutlineChartPie,
-  HiOutlineChartBar,
+	HiOutlineViewGrid,
+	HiOutlineLogout,
+	HiOutlineChartPie,
+	HiOutlineChartBar,
 } from "react-icons/hi";
 
 const DASHBOARD_SIDEBAR_LINKS = [
@@ -38,24 +38,24 @@ const DASHBOARD_SIDEBAR_LINKS = [
 
 
 function SidebarLink({ link }) {
-  const { pathname } = useLocation();
+	const { pathname } = useLocation();
 
-  return (
-    <Link
-      to={link.path}
-      className={classNames(
-        pathname === link.path ? "bg-lightGray text-mainBlue" : "text-textGray",
-        linkClass
-      )}
-    >
-      <span className="text-xl">{link.icon}</span>
-      {link.label}
-    </Link>
-  );
+	return (
+		<Link
+			to={link.path}
+			className={classNames(
+				pathname === link.path ? "bg-lightGray text-mainBlue" : "text-textGray",
+				linkClass
+			)}
+		>
+			<span className="text-xl">{link.icon}</span>
+			{link.label}
+		</Link>
+	);
 }
 
 const linkClass =
-  "flex items-center gap-2 px-3 py-2 hover:bg-lightGray hover:no-underline rounded-[12px] text-base font-semibold";
+	"flex items-center gap-2 px-3 py-2 hover:bg-lightGray hover:no-underline rounded-[12px] text-base font-semibold";
 
 export default function Sidebar() {
 
@@ -84,23 +84,4 @@ export default function Sidebar() {
 			</div>
 		</div>
 	)
-}
-
-
-      <div className="flex flex-col gap-0.5 pt-2 rounded-md">
-        <button
-          onClick={logout}
-          className={classNames(
-            linkClass,
-            "cursor-pointer text-mainRed mb-2 hover:bg-lightRed "
-          )}
-        >
-          <span className="text-xl">
-            <HiOutlineLogout />
-          </span>
-          Đăng xuất
-        </button>
-      </div>
-    </div>
-  );
 }
