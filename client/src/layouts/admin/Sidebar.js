@@ -19,7 +19,7 @@ const DASHBOARD_SIDEBAR_LINKS = [
 		key: 'themxoasua',
 		label: 'themxoasua',
 		path: '/admin/themxoasua',
-		icon: <HiOutlineViewGrid/>
+		icon: <HiOutlineViewGrid />
 	},
 	{
 		key: 'thutuc1',
@@ -57,9 +57,9 @@ export default function Sidebar() {
 		const expirationTime = new Date(Date.now() - 60 * 1000);
 		document.cookie = `admin_cookie_id=null; expires=${expirationTime.toUTCString()}; path=/`;
 		window.location.href = 'http://localhost:3000/login';
-    };
+	};
 	return (
-		<div className="bg-white w-60 p-3 pt-11 flex flex-col">
+		<div className="bg-white w-full md:w-60 p-3 pt-11 flex flex-col">
 			<p className='text-sm font-semibold text-textGray opacity-50 mb-1'>Chức năng chính</p>
 
 			<div className="flex flex-1 flex-col gap-0.5">
@@ -67,7 +67,7 @@ export default function Sidebar() {
 					<SidebarLink key={link.key} link={link} />
 				))}
 			</div>
-			
+
 			<div className="flex flex-col gap-0.5 pt-2 rounded-md">
 				<button onClick={logout} className={classNames(linkClass, 'cursor-pointer text-mainRed mb-2 hover:bg-lightRed ')}>
 					<span className="text-xl">
