@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`phone` varchar(12) NOT NULL,
     `name` varchar(30) NOT NULL,
     `score` int,
-    `deleted` bool  DEFAULT FALSE NOT NULL,
     PRIMARY KEY(`phone`)
  );
  

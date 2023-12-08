@@ -50,7 +50,7 @@ const UpdateCustomer = async (req, res) => {
 }
 const DeleteCustomer = async (req, res) => {
     try {
-
+        console.log('Delete Customer:', req.body.phone)
         let phone = req.body.phone;
 
         let data = await deleteCustomer(phone);
