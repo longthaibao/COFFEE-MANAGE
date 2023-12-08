@@ -1,9 +1,11 @@
-const mysql = require("mysql2/promise");
-const port = process.env.DB_PORT || 3306;
-const hostname = process.env.DB_HOST || "localhost";
-const username = process.env.DB_USER || "root";
-const password = process.env.DB_PASS || "";
-const database = process.env.DB_NAME || "CSDL_database";
+
+const mysql = require('mysql2/promise');
+const port = process.env.DB_PORT || 3306
+const hostname = process.env.DB_HOST || 'localhost'
+const username = process.env.DB_USER || 'root'
+const password = process.env.DB_PASS || 'Lequocan2103@'
+const database = process.env.DB_NAME || 'csdl_database'
+
 
 const connection = mysql.createPool({
   host: hostname,
@@ -16,12 +18,12 @@ const connection = mysql.createPool({
   queueLimit: 0,
   timezone: "+07:00", // Use the correct timezone offset for Vietnam
 });
-
 if (connection) {
-  console.log("Connect database succesfull");
-} else {
-  console.log("Connect database failed");
-  throw new Error("DB_ERROR");
+  console.log("Connect database succesfull")
+}
+else {
+  console.log("Connect database failed")
+  throw new Error("DB_ERROR")
 }
 
 module.exports = connection;

@@ -6,9 +6,10 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 //import route object
-const adminInfo = require("./routes/adminInfo");
-const login = require("./routes/login");
-const showInfoEmp = require("./routes/showInfoEmp");
+
+const adminInfo = require('./routes/adminInfo')
+const login = require('./routes/login');
+const customer = require('./routes/customer');
 
 //init app object
 const app = express();
@@ -26,10 +27,13 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // API dùng
+
 app.use("/api/admin/adminInfo", adminInfo);
 app.use("/api/login", login);
 app.use("/api/admin/showInfoEmp", showInfoEmp);
-
+app.use('/api/admin/customer', customer);
 app.listen(process.env.SV_PORT, "localhost", () => {
   console.log(`Example app listening on port ${process.env.SV_PORT}`);
 });
+
+
