@@ -21,8 +21,7 @@ import {
 	FiUsers,
 } from "react-icons/fi";
 
-//import sidebar css from react-pro-sidebar module and our custom css
-import "./SideBar.css";
+
 
 const SideBar = () => {
 	//create initial menuCollapse state using useState hook
