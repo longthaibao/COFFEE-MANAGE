@@ -13,22 +13,30 @@ import { Button } from "@mui/material";
 import axios from "axios";
 const currencies = [
   {
-    value: "Manager",
-    label: "Manager",
+    value: "Quản lý",
+    label: "Quản lý",
   },
   {
-    value: "Cashier",
-    label: "Cashier",
+    value: "Thu ngân",
+    label: "Thu ngân",
   },
   {
-    value: "Salesperson",
-    label: "Salesperson",
+    value: "Pha chế",
+    label: "Pha chế",
+  },
+  {
+    value: "Bảo vệ",
+    label: "Bảo vệ",
+  },
+  {
+    value: "Tạp vụ",
+    label: "Tạp vụ",
   },
 ];
 var newjob_type = "";
 function ShowEmp() {
-  const [job_type, setJobType] = React.useState("Manager");
-  const [job_typeOnClick, setJob_TypeOnClick] = React.useState("Manager");
+  const [job_type, setJobType] = React.useState("Quản lý");
+  const [job_typeOnClick, setJob_TypeOnClick] = React.useState("Quản lý");
   const [arrayOfEmp, setArrayOfEmp] = React.useState([]);
   const handleSubmit = () => {
     axios
