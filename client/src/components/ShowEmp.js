@@ -54,18 +54,6 @@ function ShowEmp() {
   };
   return (
     <div className="wrapper m-7">
-      <h3
-        style={{
-          fontSize: "70px",
-          fontWeight: "600",
-          backgroundImage: "linear-gradient(to left, #553c9a, #b393d3)",
-          backgroundClip: "text",
-          textShadow:
-            "0px 0px 5px #b393d3, 0px 0px 10px #b393d3, 0px 0px 10px #b393d3,0px 0px 20px #b393d3",
-        }}
-      >
-        Employee
-      </h3>
       <Box
         className="m-8"
         component="form"

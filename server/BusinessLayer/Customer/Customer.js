@@ -51,8 +51,8 @@ const UpdateCustomer = async (req, res) => {
 const DeleteCustomer = async (req, res) => {
     try {
         console.log('Delete Customer:', req.body.phone)
-        let phone = req.body.phone;
 
+        let phone = req.body.phone;
         let data = await deleteCustomer(phone);
         if (data) {
             return res.status(200).json({ success: true, message: 'Deleted successfully', data: data[0] });
