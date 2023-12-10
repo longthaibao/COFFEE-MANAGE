@@ -16,7 +16,6 @@ const Thutuc2 = async (req, res) => {
         'Ngày bắt đầu (ngày/tháng/năm)': formatDate(entry['Ngày bắt đầu (ngày/tháng/năm)']),
         'Ngày kết thúc (ngày/tháng/năm)': formatDate(entry['Ngày kết thúc (ngày/tháng/năm)']),
     }));
-
     return res.status(200).json(data);
 };
 

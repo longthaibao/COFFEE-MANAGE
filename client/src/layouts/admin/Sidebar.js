@@ -36,7 +36,11 @@ const SideBar = () => {
 	const handleMenuActive = () => {
 		active ? setActive(true) : setActive(false);
 	};
-
+	const logout = async () => {
+		const expirationTime = new Date(Date.now() - 60 * 1000);
+		document.cookie = `admin_cookie_id=null; expires=${expirationTime.toUTCString()}; path=/`;
+		window.location.href = 'http://localhost:3000/login';
+    };
 	return (
 		<>
 			<div id="header">
@@ -56,24 +60,24 @@ const SideBar = () => {
 						<Menu iconShape="square">
 							<MenuItem icon={<FiHome />}>
 								<Link to="/admin/test_laythongtincanhantubangemployee">
-									Home
+									Trang chủ
 								</Link>
 							</MenuItem>
 							<MenuItem icon={<FiUsers />}>
-								<Link to="/admin/themxoasua">Personnels</Link>
+								<Link to="/admin/themxoasua">Xem thông tin Khách <br></br> hàng</Link>
 							</MenuItem>
 							<MenuItem icon={<HiPencilAlt />}>
-								<Link to="/admin/thutuc1"> Congés</Link>
+								<Link to="/admin/thutuc1">Xem thông tin Nhân viên</Link>
 							</MenuItem>
 							<MenuItem icon={<HiOutlineCheck />}>
-								<Link to="/admin/thutuc2">Validation Congés</Link>
+								<Link to="/admin/thutuc2">Thống kê doanh thu <br></br> theo CTKM</Link>
 							</MenuItem>
 							{/* <MenuItem icon={<BiCog />}>Settings</MenuItem> */}
 						</Menu>
 					</SidebarContent>
 					<SidebarFooter>
 						<Menu iconShape="square">
-							<MenuItem icon={<FiLogOut />}>Logout</MenuItem>
+							<MenuItem onClick={logout} icon={<FiLogOut />}>Đăng xuất</MenuItem>
 						</Menu>
 					</SidebarFooter>
 				</ProSidebar>
