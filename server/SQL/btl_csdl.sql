@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`phone` varchar(12) NOT NULL,
     `name` varchar(30) NOT NULL,
     `score` int,
+    `deleted` bool  DEFAULT FALSE NOT NULL,
     PRIMARY KEY(`phone`)
  );
  
@@ -240,5 +241,3 @@ CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
     FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`),
     FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun` (`KID`)
 );
-
-

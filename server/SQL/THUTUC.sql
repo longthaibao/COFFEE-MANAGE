@@ -58,12 +58,13 @@ END //
 CREATE PROCEDURE INSERTCUSTOMER(
 	IN p_phone varchar(12),
     IN p_name varchar(30),
-    IN p_score int
+    IN p_score int,
+    IN p_deleted bool
 )
 BEGIN
 	 -- Insert customer information
-     insert into customer(phone,`name`,score)
-     values( p_phone, convert( p_name using utf8mb4) , p_score);
+     insert into customer(phone,`name`,score,deleted)
+     values( p_phone, convert( p_name using utf8mb4) , p_score, p_deleted);
 END //
 
 CREATE PROCEDURE `UPDATECUSTOMER`(
@@ -86,9 +87,29 @@ CREATE PROCEDURE DELETECUSTOMER(
 BEGIN
 
     -- Delete customer information
-    DELETE FROM customer
+    UPDATE customer
+    SET 
+		deleted = true
     WHERE phone = p_phone;
 END //
 
+CREATE PROCEDURE showNV(IN job_type VARCHAR(45))
+BEGIN
+SELECT 
+        e.`ID`,
+        e.`employee_name`,
+        e.`employee_gender`,
+        e.`employee_email`,
+        e.`employee_SID`,
+        e.`employee_MID`
+    FROM 
+        CSDL_database.`employee` e
+    JOIN 
+        CSDL_database.`employee_job` ej ON e.`ID` = ej.`employee_job_ID`
+    JOIN 
+        CSDL_database.`job_role` jr ON ej.`employee_job_JID` = jr.`JID`
+    WHERE 
+        jr.`job_type` = job_type;
+END//
 
 DELIMITER ;

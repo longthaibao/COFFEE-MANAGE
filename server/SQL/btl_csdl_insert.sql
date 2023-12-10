@@ -99,16 +99,16 @@ VALUES
     (2, 'Nguyên liệu Nguyên An', '1166 Cách Mạng Tháng 8, Phường 4, Quận Tân Bình, TPHCM', '0916635038 ', 'nguyenlieuphachesi@gmail.com'),
     (3, 'Bartenders’ Mart Nhất Hương ', '61A Trần Quang Diệu, Phường 13, Quận 3, TPHCM', '0283812033', 'dungcubarcafe@gmail.com');
 
-INSERT INTO `customer` (`phone`, `name`, `score`)
+INSERT INTO `customer` (`phone`, `name`, `score`,`deleted`)
 VALUES
-    ('0962154875', 'Hương Giang', 100),
-    ('0987653425', 'Nam Anh', 10),
-    ('0953427162', 'Thái Học', 0),
-    ('0762345617', 'Khánh', 30),
-    ('0796473829', 'Đạt', 50),
-    ('0912435674', 'Sỹ', 120),
-    ('0905342671', 'Nhật', 170),
-    ('0934256738', 'Ngọc Ánh', 150);
+    ('0962154875', 'Hương Giang', 100,false),
+    ('0987653425', 'Nam Anh', 10,false),
+    ('0953427162', 'Thái Học', 0,false),
+    ('0762345617', 'Khánh', 30,false),
+    ('0796473829', 'Đạt', 50,false),
+    ('0912435674', 'Sỹ', 120,false),
+    ('0905342671', 'Nhật', 170,false),
+    ('0934256738', 'Ngọc Ánh', 150,false);
 
 INSERT INTO `bill` (`BID`, `bill_sum`, `bill_store`, `bill_phone_cus`)
 VALUES
