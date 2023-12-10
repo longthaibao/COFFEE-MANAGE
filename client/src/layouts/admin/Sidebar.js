@@ -10,12 +10,6 @@ import {
 
 const DASHBOARD_SIDEBAR_LINKS = [
 	{
-		key: 'info',
-		label: 'test lấy thông tin cá nhân',
-		path: '/admin/test_laythongtincanhantubangemployee',
-		icon: <></>
-	},
-	{
 		key: 'themxoasua',
 		label: 'themxoasua',
 		path: '/admin/themxoasua',

@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/login/login";
 import LayoutAdmin from "./layouts/admin/Layout";
-import Testlaythongtincanhan from "./pages/admin/testlaythongtincanhan";
 import Thutuc1 from "./pages/admin/thutuc1";
 import Thutuc2 from "./pages/admin/thutuc2";
 import Themxoasua from "./pages/admin/themxoasua";
@@ -13,7 +12,6 @@ export default function App() {
       <Routes>
         <Route path="/admin/" element={<LayoutAdmin />}>
           <Route index element={<homeAdmin />} />
-          <Route path="test_laythongtincanhantubangemployee" element={<Testlaythongtincanhan />} />
           <Route path="themxoasua" element={<Themxoasua />} />
           <Route path="thutuc1" element={<Thutuc1 />} />
           <Route path="thutuc2" element={<Thutuc2 />} />

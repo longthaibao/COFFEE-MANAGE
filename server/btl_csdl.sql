@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS CSDL_database;
 USE CSDL_database;
-CREATE TABLE IF NOT EXISTS `job_role` 
+CREATE TABLE IF NOT EXISTS `job_role`
 (
 	`JID`        int NOT NULL ,
 	`job_type` varchar(45) NOT NULL,
@@ -90,17 +90,22 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`phone` varchar(12) NOT NULL,
     `name` varchar(30) NOT NULL,
     `score` int,
+    `deleted` bool  DEFAULT FALSE NOT NULL,
     PRIMARY KEY(`phone`)
  );
  
  CREATE TABLE IF NOT EXISTS `bill`
  (
 	`BID` int NOT NULL,
+    `state` int NOT NULL, -- 0: đang nhập, 1: hoàn tất hóa đơn (đã check CTKM và giảm giá nếu có), 2: đã thanh toán
     `bill_sum` int NOT NULL,
     `bill_store` int NOT NULL,
     `bill_phone_cus` varchar(12) NOT NULL, 
+    `bill_date` DATE NOT NULL, 
+    `bill_AID` int NOT NULL DEFAULT 1,
     PRIMARY KEY (`BID`),
     FOREIGN KEY (`bill_store`) REFERENCES `store` (`SID`),
+    FOREIGN KEY (`bill_AID`) REFERENCES `account` (`AID`),
     FOREIGN KEY (`bill_phone_cus`) REFERENCES `customer`  (`phone`)
  );
  
@@ -185,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `time_store`
     `time_store_SID` int NOT NULL,
     `open_time` TIME NOT NULL,
     `close_time` TIME NOT NULL,
-    `date` DATE NOT NULL,
+    `date` INT NOT NULL,
     PRIMARY KEY (`time_store_SID`,`open_time`,`close_time`,`date`),
     FOREIGN KEY (`time_store_SID`) REFERENCES `store` (`SID`)
 );
@@ -193,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `time_store`
 CREATE TABLE IF NOT EXISTS `coupoun`
 (
 	`KID` int NOT NULL,
-    `coupoun_name` varchar(30) NOT NULL,
+    `coupoun_name` varchar(255) NOT NULL,
     `coupoun_des` longtext NOT NULL,
     `coupoun_quantity_limit` int NOT NULL,
     `coupoun_used_quantity`  int NOT NULL,
@@ -214,11 +219,11 @@ CREATE TABLE IF NOT EXISTS `coupoun_product`
 CREATE TABLE IF NOT EXISTS `coupoun_bill`
 (
 	`KID` int NOT NULL,
-    `coupoun_bill_max_discount` int NOT NULL,
     `flag_cash` TINYINT(1) ,
     `cash_value` int ,
     `flag_percent` TINYINT(1) ,
     `percent_value` int,
+    `coupoun_bill_max_discount` int NOT NULL,
     FOREIGN KEY (`KID`) REFERENCES `coupoun` (`KID`)
 );
 
@@ -226,9 +231,9 @@ CREATE TABLE IF NOT EXISTS `product_coupoun_product`
 (
 	`product_PID` int NOT NULL,
     `coupoun_KID` int NOT NULL,
-    PRIMARY KEY (`product_PID`),
+    PRIMARY KEY (`product_PID`,`coupoun_KID`),
     FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`),
-    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun` (`KID`)
+    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_product` (`KID`)
 );
 
 CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
@@ -238,207 +243,111 @@ CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
     `discount_value` int NOT NULL,
     PRIMARY KEY (`bill_BID`),
     FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`),
-    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun` (`KID`)
+    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_bill` (`KID`)
 );
 
-INSERT INTO `job_role` (`JID`, `job_type`)
-VALUES
-    (1, 'Manager'),
-    (2, 'Cashier'),
-    (3, 'Salesperson');
-
-INSERT INTO `store` (`SID`, `store_name`, `store_phone`, `store_des`, `store_add`)
-VALUES
-    (1, 'Store A', '123-456-7890', 'Description for Store A', 'Address for Store A'),
-    (2, 'Store B', '987-654-3210', 'Description for Store B', 'Address for Store B');
-
-INSERT INTO `employee` (`ID`, `employee_name`, `employee_gender`, `employee_email`, `employee_SID`, `employee_MID`)
-VALUES
-    (1, 'John Doe', 'Male', 'john.doe@example.com', 1, 1),
-    (2, 'Jane Smith', 'Female', 'jane.smith@example.com', 1, 1);
-
-INSERT INTO `employee_phone` (`employee_phone_ID`, `employee_phone_phone`)
-VALUES
-    (1, '111-222-3333'),
-    (2, '444-555-6666');
-
-INSERT INTO `employee_job` (`employee_job_ID`, `employee_job_JID`)
-VALUES
-    (1, 1),
-    (2, 2);
-
-INSERT INTO `account` (`AID`, `username`, `password`, `employee_ID`)
-VALUES
-    (1, 'john_doe', 'password123', 1),
-    (2, 'jane_smith', 'securepass', 2);
-
-INSERT INTO `product` (`PID`, `product_name`, `product_price`, `product_size`, `product_image`)
-VALUES
-    (1, 'Product A', 10, 'M', 'product_a_image.jpg'),
-    (2, 'Product B', 20, 'L', 'product_b_image.jpg');
-
-INSERT INTO `material` (`MID`, `material_name`, `material_type`)
-VALUES
-    (1, 'Material A', 'Type X'),
-    (2, 'Material B', 'Type Y');
-
-INSERT INTO `supplier` (`supID`, `sup_name`, `sup_add`, `sup_phone`, `sup_email`)
-VALUES
-    (1, 'Supplier X', 'Address X', '111-222-3333', 'supplier_x@example.com'),
-    (2, 'Supplier Y', 'Address Y', '444-555-6666', 'supplier_y@example.com');
-
-INSERT INTO `customer` (`phone`, `name`, `score`)
-VALUES
-    ('777-888-9999', 'Customer Z', 100),
-    ('888-999-0000', 'Customer W', 150);
-
-INSERT INTO `bill` (`BID`, `bill_sum`, `bill_store`, `bill_phone_cus`)
-VALUES
-    (1, 30, 1, '777-888-9999'),
-    (2, 40, 2, '888-999-0000'),
-	(3, 25, 1, '777-888-9999'),
-    (4, 50, 2, '888-999-0000'),
-    (5, 35, 1, '777-888-9999'),
-    (6, 60, 2, '888-999-0000'),
-    (7, 28, 1, '777-888-9999'),
-    (8, 45, 2, '888-999-0000'),
-    (9, 32, 1, '777-888-9999'),
-    (10, 55, 2, '888-999-0000'),
-    (11, 40, 1, '777-888-9999'),
-    (12, 48, 2, '888-999-0000'),
-    (13, 33, 1, '777-888-9999'),
-    (14, 62, 2, '888-999-0000'),
-    (15, 38, 1, '777-888-9999'),
-    (16, 53, 2, '888-999-0000'),
-    (17, 42, 1, '777-888-9999'),
-    (18, 57, 2, '888-999-0000'),
-    (19, 36, 1, '777-888-9999'),
-    (20, 48, 2, '888-999-0000');
+DELIMITER //
+DROP PROCEDURE IF EXISTS checkIfDiscount;//
+CREATE PROCEDURE checkIfDiscount(
+	IN p_BID INT
+)
+BEGIN
+	DECLARE total_price_sum_var INT;
+    DECLARE conditions_var INT;
+    DECLARE KID_var INT;
+    DECLARE discount_value_var INT;
+    DECLARE bill_date_var DATE;
     
-INSERT INTO `product_bill` (`product_PID`, `bill_BID`)
-VALUES
-    (1, 1),
-    (2, 2);
-
-INSERT INTO `product_bill_info` (`product_bill_info_PID`, `product_bill_info_BID`, `product_bill_info_quantity`, `product_bill_info_price`)
-VALUES
-    (1, 1, 2, 20),
-    (2, 2, 3, 30);
-
-INSERT INTO `gift` (`GID`, `gift_name`, `gift_score`)
-VALUES
-    (1, 'Gift X', 50),
-    (2, 'Gift Y', 30);
-
-INSERT INTO `customer_gift` (`customer_phone`, `gift_GID`, `quantity`, `date`)
-VALUES
-    ('777-888-9999', 1, 1, '2023-12-01'),
-    ('888-999-0000', 2, 2, '2023-12-02');
-
-INSERT INTO `store_product` (`product_PID`, `store_SID`)
-VALUES
-    (1, 1),
-    (2, 2);
-
-INSERT INTO `sup_material` (`material_MID`, `sup_supID`)
-VALUES
-    (1, 1),
-    (2, 2);
-
-INSERT INTO `recipe` (`product_PID`, `RID`, `recipe_des`)
-VALUES
-    (1, 1, 'Recipe for Product A'),
-    (2, 2, 'Recipe for Product B');
-
-INSERT INTO `recipe_material` (`material_MID`, `product_PID`, `recipe_RID`, `quantity`)
-VALUES
-    (1, 1, 1, 3),
-    (2, 2, 2, 4);
-
-INSERT INTO `time_store` (`time_store_SID`, `open_time`, `close_time`, `date`)
-VALUES
-    (1, '09:00:00', '18:00:00', '2023-12-05'),
-    (2, '10:30:00', '20:00:00', '2023-12-06');
-
-INSERT INTO `coupoun` (`KID`, `coupoun_name`, `coupoun_des`, `coupoun_quantity_limit`, `coupoun_used_quantity`, `coupoun_start_date`, `coupoun_end_date`, `conditions`)
-VALUES
-    (1, 'Coupon X', 'Description X', 50, 10, '2023-12-01', '2023-12-10', 1),
-    (2, 'Coupon Y', 'Description Y', 30, 5, '2023-12-05', '2023-12-15', 2),
-    (3, 'Coupon Z', 'Description Z', 40, 8, '2023-12-10', '2023-12-20', 1),
-    (4, 'Coupon W', 'Description W', 25, 3, '2023-12-15', '2023-12-25', 2),
-    (5, 'Coupon A', 'Description A', 30, 7, '2023-12-05', '2023-12-15', 1),
-    (6, 'Coupon B', 'Description B', 20, 5, '2023-12-12', '2023-12-22', 2),
-    (7, 'Coupon C', 'Description C', 35, 6, '2023-12-08', '2023-12-18', 1),
-    (8, 'Coupon D', 'Description D', 22, 4, '2023-12-18', '2023-12-28', 2),
-    (9, 'Coupon E', 'Description E', 28, 9, '2023-12-03', '2023-12-13', 1),
-    (10, 'Coupon F', 'Description F', 18, 2, '2023-12-22', '2023-12-30', 2),
-    (11, 'Coupon G', 'Description G', 33, 5, '2023-12-14', '2023-12-24', 1),
-    (12, 'Coupon H', 'Description H', 15, 1, '2023-12-20', '2023-12-30', 2),
-    (13, 'Coupon I', 'Description I', 25, 6, '2023-12-07', '2023-12-17', 1),
-    (14, 'Coupon J', 'Description J', 12, 3, '2023-12-23', '2023-12-31', 2),
-    (15, 'Coupon K', 'Description K', 20, 4, '2023-12-09', '2023-12-19', 1),
-    (16, 'Coupon L', 'Description L', 10, 1, '2023-12-28', '2023-12-31', 2),
-    (17, 'Coupon M', 'Description M', 30, 8, '2023-12-11', '2023-12-21', 1),
-    (18, 'Coupon N', 'Description N', 18, 3, '2023-12-16', '2023-12-26', 2),
-    (19, 'Coupon O', 'Description O', 25, 7, '2023-12-06', '2023-12-16', 1),
-    (20, 'Coupon P', 'Description P', 15, 2, '2023-12-27', '2023-12-31', 2);
-
-INSERT INTO `coupoun_product` (`KID`, `coupoun_product_quantity`)
-VALUES
-    (1, 2),
-    (2, 3);
-
-INSERT INTO `coupoun_bill` (`KID`, `coupoun_bill_max_discount`, `flag_cash`, `cash_value`, `flag_percent`, `percent_value`)
-VALUES
-    (1, 10, 1, 5, 0, 0),
-    (2, 15, 0, 0, 1, 20),
-    (3, 12, 1, 6, 0, 0),
-    (4, 18, 0, 0, 1, 25),
-    (5, 10, 1, 5, 0, 0),
-    (6, 15, 0, 0, 1, 20),
-    (7, 12, 1, 6, 0, 0),
-    (8, 18, 0, 0, 1, 25),
-    (9, 10, 1, 5, 0, 0),
-    (10, 15, 0, 0, 1, 20),
-    (11, 12, 1, 6, 0, 0),
-    (12, 18, 0, 0, 1, 25),
-    (13, 10, 1, 5, 0, 0),
-    (14, 15, 0, 0, 1, 20),
-    (15, 12, 1, 6, 0, 0),
-    (16, 18, 0, 0, 1, 25),
-    (17, 10, 1, 5, 0, 0),
-    (18, 15, 0, 0, 1, 20),
-    (19, 12, 1, 6, 0, 0),
-    (20, 18, 0, 0, 1, 25);
-
-INSERT INTO `product_coupoun_product` (`product_PID`, `coupoun_KID`)
-VALUES
-    (1, 1),
-    (2, 2);
-
-INSERT INTO `bill_coupoun_bill` (`bill_BID`, `coupoun_KID`, `discount_value`)
-VALUES
-    (1, 1, 8),
-    (2, 2, 12),
-    (3, 1, 10),
-    (4, 2, 15),
-    (5, 1, 8),
-    (6, 2, 12),
-    (7, 1, 10),
-    (8, 2, 15),
-    (9, 1, 8),
-    (10, 2, 12),
-    (11, 1, 10),
-    (12, 2, 15),
-    (13, 1, 8),
-    (14, 2, 12),
-    (15, 1, 10),
-    (16, 2, 15),
-    (17, 1, 8),
-    (18, 2, 12),
-    (19, 1, 10),
-    (20, 2, 15);
+    SELECT
+		bill_sum, bill_date INTO total_price_sum_var, bill_date_var
+	FROM bill
+    WHERE BID = p_BID
+    LIMIT 1;
     
+    SELECT
+		conditions,KID INTO conditions_var,KID_var
+	FROM
+		coupoun
+	WHERE
+		bill_date_var BETWEEN coupoun_start_date AND coupoun_end_date;
+        
+    IF conditions_var IS NOT NULL THEN 
+        IF conditions_var >= 1000 THEN
+			IF total_price_sum_var >= conditions_var THEN
+				INSERT INTO
+					bill_coupoun_bill (bill_BID, coupoun_KID, discount_value)
+				VALUES(
+					p_BID,
+					KID_var,
+					CASE
+						WHEN (SELECT flag_cash FROM coupoun_bill WHERE KID = KID_var) = 1 THEN
+							(SELECT cash_value FROM coupoun_bill WHERE KID = KID_var)
+						ELSE
+							CASE
+								WHEN (SELECT flag_percent FROM coupoun_bill WHERE KID = KID_var) = 1 AND
+									 (SELECT percent_value * total_price_sum_var FROM coupoun_bill WHERE KID = KID_var) >=
+									 (SELECT coupoun_bill_max_discount FROM coupoun_bill WHERE KID = KID_var) THEN
+									(SELECT coupoun_bill_max_discount FROM coupoun_bill WHERE KID = KID_var)
+								ELSE
+									(SELECT percent_value * total_price_sum_var FROM coupoun_bill WHERE KID = KID_var)
+							END
+					END
+				);
+                UPDATE
+					coupoun
+                SET coupoun_used_quantity = coupoun_used_quantity + 1
+                WHERE KID = KID_var;
+			ELSE
+				UPDATE bill
+				SET state = 1
+				WHERE BID = p_BID;
+			END IF;
+		ELSE
+			CREATE TEMPORARY TABLE temp_result_table (
+				product_bill_info_PID INT,
+				product_bill_info_BID INT,
+				calculated_value INT
+			);
+			INSERT INTO temp_result_table (product_bill_info_PID, product_bill_info_BID, calculated_value)
+				SELECT
+					product_bill_info_PID,
+					product_bill_info_BID,
+					1 * (product_bill_info_quantity DIV conditions_VAR) AS calculated_value
+				FROM
+					product_bill_info
+					JOIN (
+						product_coupoun_product AS p1
+						JOIN coupoun_product ON p1.coupoun_KID = coupoun_product.KID
+					) ON product_bill_info.product_bill_info_PID = p1.product_PID
+					AND product_bill_info.product_bill_info_BID = p_BID
+					AND p1.coupoun_KID = KID_var
+					JOIN coupoun ON coupoun.KID = KID_var
+				WHERE
+					product_bill_info_quantity >= conditions_var;
+			IF (SELECT COUNT(*) FROM temp_result_table) > 0 THEN
+				INSERT INTO product_bill_info (product_bill_info_PID, product_bill_info_BID, product_bill_info_quantity, product_bill_info_price)
+				SELECT
+					product_bill_info_PID,
+					product_bill_info_BID,
+					calculated_value,
+					0
+				FROM temp_result_table;
+				UPDATE coupoun
+				SET coupoun_used_quantity = coupoun_used_quantity + 1
+				WHERE KID = KID_var;
+			END IF;
+			DROP TEMPORARY TABLE IF EXISTS temp_result_table;
+            UPDATE bill
+			SET state = 1
+			WHERE BID = p_BID;
+        END IF;
+	ELSE
+		UPDATE bill
+        SET state = 1
+        WHERE BID = p_BID;
+    END IF;
+END;//
+DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE Login(IN p_id VARCHAR(30), IN p_pass VARCHAR(30))
 BEGIN
@@ -446,49 +355,63 @@ BEGIN
     FROM `account`
     WHERE `username` = p_id AND `password` = p_pass;
 END //
-
-CREATE PROCEDURE GetAdminInfo(IN p_id VARCHAR(255))
+DELIMITER ;
+DELIMITER //
+DROP PROCEDURE IF EXISTS getCoupounHavingRevenueGreaterThanInputInThisYear //
+CREATE PROCEDURE getCoupounHavingRevenueGreaterThanInputInThisYear (
+    IN revenue INT,
+    IN p_year INT
+)
 BEGIN
-    -- Declare variables to store employee information
-    DECLARE emp_id INT;
-    DECLARE emp_name VARCHAR(45);
-    DECLARE emp_gender VARCHAR(10);
-    DECLARE emp_email VARCHAR(30);
-    DECLARE emp_sid INT;
-    DECLARE emp_mid INT;
-
-    -- Retrieve employee information based on the account ID
     SELECT
-        E.`ID`,
-        E.`employee_name`,
-        E.`employee_gender`,
-        E.`employee_email`,
-        E.`employee_SID`,
-        E.`employee_MID`
-    INTO
-        emp_id,
-        emp_name,
-        emp_gender,
-        emp_email,
-        emp_sid,
-        emp_mid
-    FROM
-        `account` A
-    JOIN
-        `employee` E ON A.`employee_ID` = E.`ID`
-    WHERE
-        A.`AID` = p_id;
-
-    -- Return the employee information
-    SELECT
-        emp_id AS 'ID',
-        emp_name AS 'Employee_Name',
-        emp_gender AS 'Gender',
-        emp_email AS 'Email',
-        emp_sid AS 'Store_ID',
-        emp_mid AS 'Manager_ID';
+		KID AS `Mã CTKM`,
+		coupoun_name AS `Tên CTKM`,
+		COALESCE(SUM(bill_sum), 0) AS `Tổng doanh thu (VNĐ)`,
+		coupoun_start_date AS `Ngày bắt đầu (ngày/tháng/năm)`,
+		coupoun_end_date AS `Ngày kết thúc (ngày/tháng/năm)`,
+		coupoun_quantity_limit AS `Giới hạn số lần áp dụng`,
+		coupoun_used_quantity AS `Số lần đã áp dụng`,
+		conditions `Điều kiện để áp dụng KM`
+	FROM coupoun LEFT OUTER JOIN 
+		(SELECT BID, bill_sum, coupoun_KID, product_bill_info_BID, bill_date
+		FROM 
+			(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
+			LEFT OUTER JOIN (SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS t2 
+			ON
+				csdl_database.bill.BID = t2.product_bill_info_BID 
+			WHERE
+				coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL) AS s
+		ON bill_date BETWEEN coupoun_start_date AND coupoun_end_date
+	WHERE
+		(p_year = 0)
+        OR YEAR(coupoun_start_date) = p_year
+        OR YEAR(coupoun_end_date) = p_year
+	GROUP BY KID,
+		coupoun_start_date,
+		coupoun_end_date,
+		coupoun_quantity_limit,
+		coupoun_used_quantity,
+		conditions
+	HAVING COALESCE(SUM(bill_sum), 0) >= revenue;
 END //
-
-
-
+DELIMITER ;
+DELIMITER //
+CREATE TRIGGER insert_product_bill_info_trigger -- cộng bill_sum khi có một sản phẩm mới được thêm vào hóa đơn
+AFTER INSERT ON product_bill_info
+FOR EACH ROW
+BEGIN
+    UPDATE bill
+    SET bill_sum = bill_sum + (NEW.product_bill_info_quantity * NEW.product_bill_info_price)
+    WHERE BID = NEW.product_bill_info_BID;
+END; //
+DELIMITER ;
+DELIMITER //
+CREATE TRIGGER insert_bill_coupoun_bill_trigger -- trừ bill_sum khi có một CTKM được apply lên bill đó
+AFTER INSERT ON bill_coupoun_bill
+FOR EACH ROW
+BEGIN
+	UPDATE bill
+    SET bill_sum = bill_sum - NEW.discount_value, state = 1 
+    WHERE BID = NEW.bill_BID;
+END //	
 DELIMITER ;
