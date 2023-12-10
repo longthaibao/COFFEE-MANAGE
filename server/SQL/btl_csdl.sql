@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
  
  CREATE TABLE IF NOT EXISTS `customer`
  (
-	`phone` varchar(12) NOT NULL,
+	`phone` varchar(10) NOT NULL,
     `name` varchar(30) NOT NULL,
     `score` int,
     `deleted` bool  DEFAULT FALSE NOT NULL,
