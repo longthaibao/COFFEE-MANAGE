@@ -1,76 +1,85 @@
-import React from 'react'
-import classNames from 'classnames'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from "react-router-dom";
+//import useState hook to create menu collapse state
+import React, { useState } from "react";
+
+//import react pro sidebar components
 import {
-	HiOutlineViewGrid,
-	HiOutlineLogout,
-	HiOutlineChartPie,
-	HiOutlineChartBar
-} from 'react-icons/hi'
+	ProSidebar,
+	Menu,
+	MenuItem,
+	SidebarHeader,
+	SidebarFooter,
+	SidebarContent,
+} from "react-pro-sidebar";
+import "react-pro-sidebar/dist/css/styles.css";
+import { HiPencilAlt, HiOutlineCheck } from "react-icons/hi";
+import {
+	FiHome,
+	FiLogOut,
+	FiArrowLeftCircle,
+	FiArrowRightCircle,
+	FiUsers,
+} from "react-icons/fi";
 
-const DASHBOARD_SIDEBAR_LINKS = [
-	{
-		key: 'themxoasua',
-		label: 'themxoasua',
-		path: '/admin/themxoasua',
-		icon: <HiOutlineViewGrid/>
-	},
-	{
-		key: 'thutuc1',
-		label: 'thutuc1: show bang nhan vien theo chi nhanh',
-		path: '/admin/thutuc1',
-		icon: <HiOutlineChartBar />
-	},
-	{
-		key: 'thutuc2',
-		label: 'thutuc2: thong ke doanh thu theo CTKM',
-		path: '/admin/thutuc2',
-		icon: <HiOutlineChartPie />
-	}
-]
 
-function SidebarLink({ link }) {
-	const { pathname } = useLocation()
+
+const SideBar = () => {
+	//create initial menuCollapse state using useState hook
+	const [menuCollapse, setMenuCollapse] = useState(false);
+	const [active, setActive] = useState(false);
+	//create a custom function that will change menucollapse state from false to true and true to false
+	const menuIconClick = () => {
+		//condition checking to change state from true to false and vice versa
+		menuCollapse ? setMenuCollapse(false) : setMenuCollapse(true);
+	};
+	// handle change the state active
+	const handleMenuActive = () => {
+		active ? setActive(true) : setActive(false);
+	};
 
 	return (
-		<Link
-			to={link.path}
-			className={classNames(pathname === link.path ? 'bg-lightGray text-mainBlue' : 'text-textGray', linkClass)}
-		>
-			<span className="text-xl">{link.icon}</span>
-			{link.label}
-		</Link>
-	)
-}
-
-const linkClass =
-	'flex items-center gap-2 px-3 py-2 hover:bg-lightGray hover:no-underline rounded-[12px] text-base font-semibold'
-
-export default function Sidebar() {
-	const logout = async () => {
-		const expirationTime = new Date(Date.now() - 60 * 1000);
-		document.cookie = `admin_cookie_id=null; expires=${expirationTime.toUTCString()}; path=/`;
-		window.location.href = 'http://localhost:3000/login';
-    };
-	return (
-		<div className="bg-white w-60 p-3 pt-11 flex flex-col">
-			<p className='text-sm font-semibold text-textGray opacity-50 mb-1'>Chức năng chính</p>
-
-			<div className="flex flex-1 flex-col gap-0.5">
-				{DASHBOARD_SIDEBAR_LINKS.map((link) => (
-					<SidebarLink key={link.key} link={link} />
-				))}
+		<>
+			<div id="header">
+				{/* collapsed props to change menu size using menucollapse state */}
+				<ProSidebar collapsed={menuCollapse}>
+					<SidebarHeader>
+						<div className="logotext">
+							{/* small and big change using menucollapse state */}
+							{/* <p>{menuCollapse ? "Logo" : "Big Logo"}</p> */}
+							<img
+								src="https://svn.apache.org/repos/asf/lucene.net/branches/3.0.3/branding/logo/lucene-net-icon-512x256.png"
+								alt=""
+							/>
+						</div>
+					</SidebarHeader>
+					<SidebarContent>
+						<Menu iconShape="square">
+							<MenuItem icon={<FiHome />}>
+								<Link to="/admin/test_laythongtincanhantubangemployee">
+									Home
+								</Link>
+							</MenuItem>
+							<MenuItem icon={<FiUsers />}>
+								<Link to="/admin/themxoasua">Personnels</Link>
+							</MenuItem>
+							<MenuItem icon={<HiPencilAlt />}>
+								<Link to="/admin/thutuc1"> Congés</Link>
+							</MenuItem>
+							<MenuItem icon={<HiOutlineCheck />}>
+								<Link to="/admin/thutuc2">Validation Congés</Link>
+							</MenuItem>
+							{/* <MenuItem icon={<BiCog />}>Settings</MenuItem> */}
+						</Menu>
+					</SidebarContent>
+					<SidebarFooter>
+						<Menu iconShape="square">
+							<MenuItem icon={<FiLogOut />}>Logout</MenuItem>
+						</Menu>
+					</SidebarFooter>
+				</ProSidebar>
 			</div>
-			
-			<div className="flex flex-col gap-0.5 pt-2 rounded-md">
-				<button onClick={logout} className={classNames(linkClass, 'cursor-pointer text-mainRed mb-2 hover:bg-lightRed ')}>
-					<span className="text-xl">
-						<HiOutlineLogout />
-					</span>
-					Đăng xuất
-				</button>
-			</div>
-		</div>
-	)
-}
+		</>
+	);
+};
 
+export default SideBar;
