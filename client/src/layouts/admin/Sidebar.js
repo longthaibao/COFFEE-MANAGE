@@ -61,7 +61,7 @@ const SideBar = () => {
                 <Link to="/admin/thutuc1"> Danh sách nhân viên</Link>
               </MenuItem>
               <MenuItem icon={<HiOutlineCheck />}>
-                <Link to="/admin/thutuc2">Validation Congés</Link>
+                <Link to="/admin/thutuc2">Thống kê CTKM</Link>
               </MenuItem>
               {/* <MenuItem icon={<BiCog />}>Settings</MenuItem> */}
             </Menu>

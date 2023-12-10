@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS CSDL_database;
 USE CSDL_database;
-CREATE TABLE IF NOT EXISTS `job_role` 
+CREATE TABLE IF NOT EXISTS `job_role`
 (
 	`JID`        int NOT NULL ,
 	`job_type` varchar(45) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
  
  CREATE TABLE IF NOT EXISTS `customer`
  (
-	`phone` varchar(12) NOT NULL,
+	`phone` varchar(10) NOT NULL,
     `name` varchar(30) NOT NULL,
     `score` int,
     `deleted` bool  DEFAULT FALSE NOT NULL,
@@ -97,11 +97,15 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
  CREATE TABLE IF NOT EXISTS `bill`
  (
 	`BID` int NOT NULL,
+    `state` int NOT NULL, -- 0: đang nhập, 1: hoàn tất hóa đơn (đã check CTKM và giảm giá nếu có), 2: đã thanh toán
     `bill_sum` int NOT NULL,
     `bill_store` int NOT NULL,
     `bill_phone_cus` varchar(10) NOT NULL, 
+    `bill_date` DATE NOT NULL, 
+    `bill_AID` int NOT NULL DEFAULT 1,
     PRIMARY KEY (`BID`),
     FOREIGN KEY (`bill_store`) REFERENCES `store` (`SID`),
+    FOREIGN KEY (`bill_AID`) REFERENCES `account` (`AID`),
     FOREIGN KEY (`bill_phone_cus`) REFERENCES `customer`  (`phone`)
  );
  
@@ -186,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `time_store`
     `time_store_SID` int NOT NULL,
     `open_time` TIME NOT NULL,
     `close_time` TIME NOT NULL,
-    `date` DATE NOT NULL,
+    `date` INT NOT NULL,
     PRIMARY KEY (`time_store_SID`,`open_time`,`close_time`,`date`),
     FOREIGN KEY (`time_store_SID`) REFERENCES `store` (`SID`)
 );
@@ -194,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `time_store`
 CREATE TABLE IF NOT EXISTS `coupoun`
 (
 	`KID` int NOT NULL,
-    `coupoun_name` varchar(30) NOT NULL,
+    `coupoun_name` varchar(255) NOT NULL,
     `coupoun_des` longtext NOT NULL,
     `coupoun_quantity_limit` int NOT NULL,
     `coupoun_used_quantity`  int NOT NULL,
@@ -215,11 +219,11 @@ CREATE TABLE IF NOT EXISTS `coupoun_product`
 CREATE TABLE IF NOT EXISTS `coupoun_bill`
 (
 	`KID` int NOT NULL,
-    `coupoun_bill_max_discount` int NOT NULL,
     `flag_cash` TINYINT(1) ,
     `cash_value` int ,
     `flag_percent` TINYINT(1) ,
     `percent_value` int,
+    `coupoun_bill_max_discount` int NOT NULL,
     FOREIGN KEY (`KID`) REFERENCES `coupoun` (`KID`)
 );
 
@@ -227,9 +231,9 @@ CREATE TABLE IF NOT EXISTS `product_coupoun_product`
 (
 	`product_PID` int NOT NULL,
     `coupoun_KID` int NOT NULL,
-    PRIMARY KEY (`product_PID`),
+    PRIMARY KEY (`product_PID`,`coupoun_KID`),
     FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`),
-    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun` (`KID`)
+    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_product` (`KID`)
 );
 
 CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
@@ -239,5 +243,24 @@ CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
     `discount_value` int NOT NULL,
     PRIMARY KEY (`bill_BID`),
     FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`),
-    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun` (`KID`)
+    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_bill` (`KID`)
 );
+
+DELIMITER //
+CREATE TRIGGER insert_product_bill_info_trigger -- cộng bill_sum khi có một sản phẩm mới được thêm vào hóa đơn
+AFTER INSERT ON product_bill_info
+FOR EACH ROW
+BEGIN
+    UPDATE bill
+    SET bill_sum = bill_sum + (NEW.product_bill_info_quantity * NEW.product_bill_info_price)
+    WHERE BID = NEW.product_bill_info_BID;
+END; //
+CREATE TRIGGER insert_bill_coupoun_bill_trigger -- trừ bill_sum khi có một CTKM được apply lên bill đó
+AFTER INSERT ON bill_coupoun_bill
+FOR EACH ROW
+BEGIN
+	UPDATE bill
+    SET bill_sum = bill_sum - NEW.discount_value, state = 1 
+    WHERE BID = NEW.bill_BID;
+END //	
+DELIMITER ;
