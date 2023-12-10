@@ -3,7 +3,7 @@
   background: #fff;
   border-radius: 4px;
   box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.5);
-  max-width: 700px;
+  max-width: 800px;
   min-height: 400px;
   display: flex;
   flex-direction: row;
@@ -38,14 +38,14 @@
 }
 
 .img-avatar {
-  width: 80px;
+  width: 100px;
   height: 80px;
   position: absolute;
   border-radius: 50%;
   border: 6px solid white;
   background-image: linear-gradient(-60deg, #16a085 0%, #f4d03f 100%);
   top: 15px;
-  left: 85px;
+  left: 25%;
 }
 
 .card-text {
