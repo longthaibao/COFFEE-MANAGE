@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `store`
 (
 	`SID` int NOT NULL,
 	`store_name` varchar(100) NOT NULL,
-	`store_phone` varchar(12) NOT NULL,
+	`store_phone` varchar(10) NOT NULL,
 	`store_des` longtext,
 	`store_add` mediumtext,
 	PRIMARY KEY (`SID`)
@@ -33,7 +33,7 @@ CREATE TABLE  IF NOT EXISTS `employee`
 CREATE TABLE IF NOT EXISTS `employee_phone`
 (
 	`employee_phone_ID` int NOT NULL,
-    `employee_phone_phone` varchar(12),
+    `employee_phone_phone` varchar(10),
     PRIMARY KEY(`employee_phone_ID`,`employee_phone_phone`),
     FOREIGN KEY (`employee_phone_ID`) REFERENCES `employee` (`ID`)
 );
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`supID` int NOT NULL,
     `sup_name` varchar(45) NOT NULL,
     `sup_add` varchar(100) NOT NULL,
-    `sup_phone` varchar(12) NOT NULL,
+    `sup_phone` varchar(10) NOT NULL,
     `sup_email` varchar(30) NOT NULL,
     PRIMARY KEY(`supID`)
  );
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `state` int NOT NULL, -- 0: đang nhập, 1: hoàn tất hóa đơn (đã check CTKM và giảm giá nếu có), 2: đã thanh toán
     `bill_sum` int NOT NULL,
     `bill_store` int NOT NULL,
-    `bill_phone_cus` varchar(12) NOT NULL, 
+    `bill_phone_cus` varchar(10) NOT NULL, 
     `bill_date` DATE NOT NULL, 
     `bill_AID` int NOT NULL DEFAULT 1,
     PRIMARY KEY (`BID`),
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
  
  CREATE TABLE IF NOT EXISTS `customer_gift`
  (
-	`customer_phone` varchar(12) NOT NULL,
+	`customer_phone` varchar(10) NOT NULL,
     `gift_GID` int NOT NULL,
     `quantity` int NOT NULL,
     `date` DATE NOT NULL,
