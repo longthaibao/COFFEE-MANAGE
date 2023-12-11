@@ -55,21 +55,7 @@ export default function Thutuc2() {
         setHeaders([]);
     };
 
-    const bcrypt = require('bcryptjs');
-
-    const plaintextPassword = '1234567';
-
-    // Hash the password
-    const hashedPassword = bcrypt.hashSync(plaintextPassword, 10);
-
-    console.log('Hashed Password:', hashedPassword);
-
-    // Compare a password attempt with the stored hash
-    const isPasswordCorrect = bcrypt.compareSync('1234567', hashedPassword);
-
-    console.log('Password is correct:', isPasswordCorrect);
-
-
+   
     return (
         <div className="w-full flex justify-center items-center bg-cover">
             <div className="w-full h-222 bg-white rounded-2xl flex items-center flex-col p-4">
