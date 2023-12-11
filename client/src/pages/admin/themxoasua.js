@@ -12,7 +12,7 @@ import {
 	Button,
 	DialogActions,
 	DialogContent,
-	DialogTitle,
+	DialogTitle,	
 	IconButton,
 	Tooltip,
 
