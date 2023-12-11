@@ -193,16 +193,20 @@ BEGIN
         phone = p_phone;
 END //
 
-CREATE PROCEDURE DELETECUSTOMER(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DELETECUSTOMER`(
     IN p_phone VARCHAR(10)
 )
 BEGIN
-
-    -- Delete customer information
-    UPDATE customer
-    SET 
-		deleted = true
-    WHERE phone = p_phone;
+     IF EXISTS (SELECT 1 FROM bill WHERE bill_phone_cus = p_phone) THEN
+        -- If yes, set deleted to true in the bill table as well
+        UPDATE customer
+        SET deleted = true
+        WHERE phone= p_phone;
+    ELSE
+        -- If no, delete the customer from the customer table
+        DELETE FROM customer
+        WHERE phone = p_phone;
+    END IF;
 END //
 
 CREATE PROCEDURE showNV(IN job_type VARCHAR(45))

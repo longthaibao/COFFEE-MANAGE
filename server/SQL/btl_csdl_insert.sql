@@ -421,9 +421,7 @@ Call checkIfDiscount(48);
 Call checkIfDiscount(49);
 Call checkIfDiscount(50);
     
-UPDATE bill
-SET state = 2
-;
+
 
 INSERT INTO `gift` (`GID`, `gift_name`, `gift_score`)
 VALUES
@@ -434,3 +432,6 @@ INSERT INTO `customer_gift` (`customer_phone`, `gift_GID`, `quantity`, `date`)
 VALUES
     ('0762345617', 1, 1, '2023-12-01'),
     ('0912435674', 2, 2, '2023-12-02');
+    
+UPDATE bill
+SET state = 2;
