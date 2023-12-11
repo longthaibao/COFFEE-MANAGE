@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
  (
 	`AID` int NOT NULL,
     `username` varchar(30) NOT NULL,
-    `password` varchar(30) NOT NULL,
+    `password` varchar(256) NOT NULL,
     `employee_ID` int NOT NULL,
     PRIMARY KEY(`AID`),
     FOREIGN KEY (`employee_ID`) REFERENCES `employee` (`ID`)
@@ -97,8 +97,8 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
  CREATE TABLE IF NOT EXISTS `bill`
  (
 	`BID` int NOT NULL,
-    `state` int NOT NULL, -- 0: đang nhập, 1: hoàn tất hóa đơn (đã check CTKM và giảm giá nếu có), 2: đã thanh toán
-    `bill_sum` int NOT NULL,
+    `state` int NOT NULL DEFAULT 0, -- 0: đang nhập, 1: hoàn tất hóa đơn (đã check CTKM và giảm giá nếu có), 2: đã thanh toán
+    `bill_sum` int NOT NULL DEFAULT 0,
     `bill_store` int NOT NULL,
     `bill_phone_cus` varchar(10) NOT NULL, 
     `bill_date` DATE NOT NULL, 
