@@ -3,6 +3,7 @@ import axios from "axios";
 import APIs from "../util/API";
 
 export default function LoginComponent() {
+
   const [formData, setFormData] = useState({
     id: "john_doe",
     pass: "password123",
@@ -47,6 +48,7 @@ export default function LoginComponent() {
   useEffect(() => {
     return () => {
       setNotification(null);
+
     };
   }, []);
 
