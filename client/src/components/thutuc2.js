@@ -26,6 +26,11 @@ export default function Thutuc2() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (formData === "" || parseFloat(formData) < 0) {
+          // Show an alert if the field is blank
+            window.alert("Doanh thu không được để trống và phải từ 0 trở lên");
+            return;
+        }
         try {
             const response = await axios.post(APIs.APIadminThutuc2, {
                 revenue: formData,
@@ -59,7 +64,7 @@ export default function Thutuc2() {
     return (
         <div className="w-full flex justify-center items-center bg-cover">
             <div className="w-full h-222 bg-white rounded-2xl flex items-center flex-col p-4">
-                <h1 className="text-gray-700 text-2xl font-bold">Thống kê doanh thu của các chương trình khuyến mãi</h1>
+                <h1 className="text-gray-700 text-2xl font-bold">Thống kê các chương trình khuyến mãi có Doanh thu (VNĐ) lớn hơn hoặc bằng R theo năm và hiển thị kèm thông tin của Khách hàng đã chi nhiều nhất trong CTKM đó</h1>
                 <Box
                   component="form"
                   sx={{
@@ -71,6 +76,10 @@ export default function Thutuc2() {
                   onSubmit={(e) => {
                     e.preventDefault(); // Prevent the default form submission
                     handleSubmit(e); // Your custom form submission logic
+                    const tableElement = document.getElementById("resultTable");
+                    if (tableElement) {
+                      tableElement.scrollIntoView({ behavior: 'smooth' });
+                    }
                   }}
                 >
                   <div>
@@ -79,7 +88,7 @@ export default function Thutuc2() {
                           name="year"
                           select
                           onChange={handleYearChange}
-                          label="Theo năm"
+                          label="Chọn năm"
                           value={selectedYear}
                           SelectProps={{
                               native: true,
@@ -99,18 +108,17 @@ export default function Thutuc2() {
                       </TextField>
                   </div>
                   <div className="mb-3">
-                      <label htmlFor="revenue" className="block text-gray-700 text-base font-semibold mb-1">
-                      Có Doanh thu lớn hơn
-                      </label>
                       <TextField
-                      type="number"
-                      id="revenue"
-                      name="revenue"
-                      required
-                      min={0}
-                      placeholder="Nhập mức doanh thu"
-                      value={formData}
-                      onChange={handleInputChange}
+                          label="Nhập R (VNĐ)"
+                          type="number"
+                          id="revenue"
+                          name="revenue"
+                          required
+                          min={0}
+                          placeholder="Nhập mức doanh thu"
+                          helperText="Hệ thống sẽ lọc ra các CTKM có doanh thu lớn hơn hoặc bằng giá trị bạn chọn"
+                          value={formData}
+                          onChange={handleInputChange}
                       />
                   </div>
                   <Button
@@ -163,8 +171,8 @@ export default function Thutuc2() {
                                   key={colIndex}
                                   align="center"
                                   style={{
-                                    color: colIndex % 2 === 0 ? "#ffffff" : "#ffffff",
-                                    backgroundColor: colIndex % 2 === 0 ? "#324960" : "#4FC3A1",
+                                    color: colIndex % 2 === 0 ? "#000000" : "#000000",
+                                    backgroundColor: colIndex % 2 === 0 ? "#ffffff" : "#ffffff",
                                   }}
                                 >
                                   {item[header]}

@@ -5,12 +5,15 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
+import TablePagination from "@mui/material/TablePagination";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import axios from "axios";
 import Tippy from "@tippyjs/react/headless";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 const currencies = [
@@ -46,6 +49,9 @@ function ShowEmp() {
   const [arrayOfEmp, setArrayOfEmp] = React.useState([]);
   const [isShowInput, setIsShowInput] = React.useState(false);
   const [editStates, setEditStates] = React.useState({});
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [displayedData, setDisplayedData] = React.useState([]);
+  const [page, setPage] = React.useState(0);
   const handleEditButtonClick = (ID) => {
     setEditStates((prev) => ({
       ...prev,
@@ -56,6 +62,22 @@ function ShowEmp() {
   const handleShowCreateInput = () => {
     setIsShowInput((pre) => !pre);
   };
+  const handleChangePage = (event, newPage) => {
+    const startIndex = newPage * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    setDisplayedData(arrayOfEmp.slice(startIndex, endIndex));
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    const newPage = Math.floor((page * rowsPerPage) / newRowsPerPage);
+    const startIndex = newPage * newRowsPerPage;
+    const endIndex = startIndex + newRowsPerPage;
+    setDisplayedData(arrayOfEmp.slice(startIndex, endIndex));
+    setRowsPerPage(newRowsPerPage);
+    setPage(newPage);
+  };
   const fetchData = async () => {
     try {
       const respone = await axios.post(
@@ -64,11 +86,22 @@ function ShowEmp() {
       );
       setArrayOfEmp(respone.data);
       setJob_TypeOnClick(job_type);
+      setDisplayedData(respone.data.slice(0, rowsPerPage));
+      console.log(displayedData);
     } catch (error) {
       console.log(error);
     }
   };
   const handleSubmitCreateEmploy = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmail = emailRegex.test(employee_email);
+    if (isEmail === false) {
+      const notify = () => toast.error("Vui lòng nhập đúng email");
+      notify();
+      setEmployeeName("");
+      setEmployeeEmail("");
+      return;
+    }
     await axios
       .post("http://localhost:3001/api/admin/showInfoEmp/create/employee", {
         employee_name: employee_name,
@@ -79,7 +112,10 @@ function ShowEmp() {
       .then((res) => {
         setIsShowInput(false);
         fetchData();
-        console.log(res);
+        const notify = () => toast.success("Tạo nhân viên thành công");
+        notify();
+        setEmployeeName("");
+        setEmployeeEmail("");
       })
       .catch((err) => console.log(err));
   };
@@ -89,6 +125,15 @@ function ShowEmp() {
     employee_gender,
     employee_email
   ) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmail = emailRegex.test(employee_email);
+    if (isEmail === false) {
+      const notify = () => toast.error("Vui lòng nhập đúng email");
+      notify();
+      setEmployeeName("");
+      setEmployeeEmail("");
+      return;
+    }
     await axios
       .post("http://localhost:3001/api/admin/showInfoEmp/update/employee", {
         ID,
@@ -103,6 +148,10 @@ function ShowEmp() {
           [ID]: !prev[ID],
         }));
         fetchData();
+        const notify = () => toast.success("Cập nhật thành công");
+        notify();
+        setEmployeeName("");
+        setEmployeeEmail("");
       })
       .catch((err) => console.log(err));
   };
@@ -113,6 +162,8 @@ function ShowEmp() {
       })
       .then((res) => {
         fetchData();
+        const notify = () => toast.success("Xoá nhân viên thành công");
+        notify();
       })
       .catch((err) => console.log(err));
   };
@@ -147,20 +198,36 @@ function ShowEmp() {
               id="outlined-required"
               label="Tên nhân viên"
               placeholder="Tên nhân viên"
+              value={employee_name}
             />
             <TextField
+              id="standard-select-currency-native"
+              select
               onChange={(e) => setEmployeeGender(e.target.value)}
-              required
-              id="outlined-required"
               label="Giới tính"
-              placeholder="Giới tính"
-            />
+              defaultValue="EUR"
+              SelectProps={{
+                native: true,
+              }}
+              helperText="Vui lòng chọn giới tính"
+              variant="standard"
+              size="large"
+              style={{ position: "relative" }}
+            >
+              <option key={1} value="Nam">
+                {"Nam"}
+              </option>
+              <option key={2} value="Nữ">
+                {"Nữ"}
+              </option>
+            </TextField>
             <TextField
               onChange={(e) => setEmployeeEmail(e.target.value)}
               required
               id="outlined-required"
               label="Email"
               placeholder="Email"
+              value={employee_email}
             />
             <TextField
               disabled
@@ -230,31 +297,47 @@ function ShowEmp() {
               id="outlined-required"
               label="Tên nhân viên"
               placeholder="Tên nhân viên"
+              value={employee_name}
             />
             <TextField
+              id="standard-select-currency-native"
+              select
               onChange={(e) => setEmployeeGender(e.target.value)}
-              required
-              id="outlined-required"
               label="Giới tính"
-              placeholder="Giới tính"
-            />
+              defaultValue="EUR"
+              SelectProps={{
+                native: true,
+              }}
+              helperText="Vui lòng chọn giới tính"
+              variant="standard"
+              size="large"
+              style={{ position: "relative" }}
+            >
+              <option key={1} value="Nam">
+                {"Nam"}
+              </option>
+              <option key={2} value="Nữ">
+                {"Nữ"}
+              </option>
+            </TextField>
             <TextField
               onChange={(e) => setEmployeeEmail(e.target.value)}
               required
               id="outlined-required"
               label="Email"
               placeholder="Email"
+              value={employee_email}
             />
             <TextField
               id="standard-select-currency-native"
               select
               onChange={(e) => setjob_typeInsertEmploy(e.target.value)}
-              label="Job position"
+              label="Vị trí công việc"
               defaultValue="EUR"
               SelectProps={{
                 native: true,
               }}
-              helperText="Please select job position"
+              helperText="Vui lòng chọn vị trí công việc"
               variant="standard"
               size="large"
               style={{ position: "relative" }}
@@ -287,14 +370,16 @@ function ShowEmp() {
       </div>
     );
   };
-  const handleSubmit = () => {
-    axios
+  const handleSubmit = async () => {
+    await axios
       .post("http://localhost:3001/api/admin/showInfoEmp/getInfoEmp", {
         job_type,
       })
       .then((respone) => {
         setArrayOfEmp(respone.data);
+        setDisplayedData(respone.data);
         setJob_TypeOnClick(job_type);
+        setPage(0);
       })
       .catch((error) => {
         console.log(error);
@@ -302,6 +387,7 @@ function ShowEmp() {
   };
   return (
     <div className="wrapper m-7">
+      <ToastContainer autoClose={1000} />
       <div
         style={{
           display: "flex",
@@ -324,12 +410,12 @@ function ShowEmp() {
               id="standard-select-currency-native"
               select
               onChange={(e) => setJobType(e.target.value)}
-              label="Job position"
+              label="Vị trí công việc"
               defaultValue="EUR"
               SelectProps={{
                 native: true,
               }}
-              helperText="Please select job position"
+              helperText="Vui lòng chọn vị trí công việc"
               variant="standard"
               size="large"
               style={{ position: "relative" }}
@@ -366,6 +452,7 @@ function ShowEmp() {
           }}
         >
           <Tippy
+            onClickOutside={() => setIsShowInput((pre) => !pre)}
             duration={[1050, 1050]}
             render={renderInput}
             interactive
@@ -413,13 +500,13 @@ function ShowEmp() {
                 align="center"
                 style={{ color: "#ffffff", backgroundColor: "#324960" }}
               >
-                Name
+                Tên
               </TableCell>
               <TableCell
                 align="center"
                 style={{ color: "#ffffff", backgroundColor: "#4FC3A1" }}
               >
-                Gender
+                Giới tính
               </TableCell>
               <TableCell
                 align="center"
@@ -429,14 +516,17 @@ function ShowEmp() {
               </TableCell>
               <TableCell
                 align="center"
-                style={{ color: "#ffffff", backgroundColor: "#324960" }}
+                style={{
+                  color: "#ffffff",
+                  backgroundColor: "#4FC3A1",
+                }}
               >
                 Chỉnh sửa
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {arrayOfEmp.map((row, index) => (
+            {displayedData.map((row, index) => (
               <TableRow
                 key={index}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -449,11 +539,12 @@ function ShowEmp() {
                 <TableCell align="center">
                   <button
                     onClick={() => handleDelete(row.ID)}
-                    style={{ margin: "5px" }}
+                    style={{ margin: "10px" }}
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
                   <Tippy
+                    onClickOutside={() => setEditStates(row.ID)}
                     interactive
                     render={() => handleEdit(row.ID)}
                     visible={editStates[row.ID] || false}
@@ -461,7 +552,7 @@ function ShowEmp() {
                   >
                     <button
                       onClick={() => handleEditButtonClick(row.ID)}
-                      style={{ margin: "5px" }}
+                      style={{ margin: "10px" }}
                     >
                       <FontAwesomeIcon icon={faPenToSquare} />
                     </button>
@@ -471,6 +562,15 @@ function ShowEmp() {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={arrayOfEmp.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </TableContainer>
     </div>
   );
