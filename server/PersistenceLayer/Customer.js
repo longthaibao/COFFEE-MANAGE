@@ -14,10 +14,8 @@ const getCustomer = async () => {
 
 const insertCustomer = async (phone, name) => {
     try {
-        const deleted = false;
-        const score = 0;
-        const query = `CALL INSERTCUSTOMER(?,?,?,?);`
-        const [result, fields] = await connection.query(query, [phone, name, score, deleted]);
+        const query = `CALL INSERTCUSTOMER(?,?);`
+        const [result, fields] = await connection.query(query, [phone, name]);
         return result;
     } catch (error) {
         console.error('Lỗi khi thực hiện truy vấn:', error);

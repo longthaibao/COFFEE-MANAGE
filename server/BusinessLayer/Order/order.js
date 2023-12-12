@@ -1,4 +1,4 @@
-const { getOrder, insertOrder, updateOrder, deleteOrder, viewOrder } = require('../../PersistenceLayer/Order');
+const { getOrder, insertOrder, updateOrder, deleteOrder, viewOrder, getDetailBill } = require('../../PersistenceLayer/Order');
 const { getCustomer, insertCustomer, updateCustomer, deleteCustomer } = require('../../PersistenceLayer/Customer');
 const GetOrder = async (req, res) => {
     let data = await getOrder(req.query.id);
@@ -10,6 +10,17 @@ const ViewOrder = async (req, res) => {
     console.log(data);
     return res.status(200).json(data[0]);
 }
+const GetDetailBill = async (req, res) => {
+    const keyValuePairs = Object.entries(req.body);
+    let BID = keyValuePairs[0][0];
+    console.log("DB:", BID);
+
+    let data = await getDetailBill(BID);
+    // let data = await getDetailBill(req.body.BID);
+    console.log(data);
+    return res.status(200).json(data[0]);
+}
+
 const InsertCustomer = async (req, res) => {
     try {
         let phone = req.body.phone;
@@ -72,4 +83,4 @@ const DeleteOrder = async (req, res) => {
 
 }
 
-module.exports = { GetOrder, InsertCustomer, UpdateCustomer, DeleteOrder, ViewOrder}
+module.exports = { GetOrder, InsertCustomer, UpdateCustomer, DeleteOrder, ViewOrder, GetDetailBill }

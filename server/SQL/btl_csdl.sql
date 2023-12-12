@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `product_name` varchar(40) NOT NULL,
     `product_price` int NOT NULL,
     `product_size` varchar(1) NOT NULL,
-    `product_image` varchar(100),
+    -- `product_image` varchar(100),
     PRIMARY KEY(`PID`)
  );
  

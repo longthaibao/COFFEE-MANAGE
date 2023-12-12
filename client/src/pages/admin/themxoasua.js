@@ -14,25 +14,22 @@ import {
   DialogTitle,
   IconButton,
   Tooltip,
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-
+} from '@mui/material'
 import apiEndpoints from "./../../components/Customer.js"; // Assuming you store your hooks in an 'api.js' file
 
 import Row from "react-bootstrap/Row";
-
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 const Themxoasua = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [customer, setCustomer] = useState([]);
-  // const [isEditing, setIsEditing] = useState(false);
   const [editingPhone, setEditingPhone] = useState(null);
 
   const columns = useMemo(
     () => [
       {
         accessorKey: "phone",
-        header: "Number Phone",
+        header: "Số điện thoại",
         muiEditTextFieldProps: {
           type: "integer",
           required: true,
@@ -47,7 +44,7 @@ const Themxoasua = () => {
       },
       {
         accessorKey: "name",
-        header: "Full Name",
+        header: "Họ và tên",
         muiEditTextFieldProps: {
           type: "text",
           required: true,
@@ -62,7 +59,7 @@ const Themxoasua = () => {
       },
       {
         accessorKey: "score",
-        header: "Score",
+        header: "Điểm tích lũy",
         muiEditTextFieldProps: {
           type: "number",
           required: true,
