@@ -99,7 +99,6 @@ function ShowEmp() {
       const notify = () => toast.error("Vui lòng nhập đúng email");
       notify();
       setEmployeeName("");
-      setEmployeeGender("");
       setEmployeeEmail("");
       return;
     }
@@ -113,6 +112,8 @@ function ShowEmp() {
       .then((res) => {
         setIsShowInput(false);
         fetchData();
+        const notify = () => toast.success("Tạo nhân viên thành công");
+        notify();
         setEmployeeName("");
         setEmployeeEmail("");
       })
@@ -130,7 +131,6 @@ function ShowEmp() {
       const notify = () => toast.error("Vui lòng nhập đúng email");
       notify();
       setEmployeeName("");
-      setEmployeeGender("");
       setEmployeeEmail("");
       return;
     }
@@ -148,6 +148,8 @@ function ShowEmp() {
           [ID]: !prev[ID],
         }));
         fetchData();
+        const notify = () => toast.success("Cập nhật thành công");
+        notify();
         setEmployeeName("");
         setEmployeeEmail("");
       })
@@ -160,6 +162,8 @@ function ShowEmp() {
       })
       .then((res) => {
         fetchData();
+        const notify = () => toast.success("Xoá nhân viên thành công");
+        notify();
       })
       .catch((err) => console.log(err));
   };
@@ -328,12 +332,12 @@ function ShowEmp() {
               id="standard-select-currency-native"
               select
               onChange={(e) => setjob_typeInsertEmploy(e.target.value)}
-              label="Job position"
+              label="Vị trí công việc"
               defaultValue="EUR"
               SelectProps={{
                 native: true,
               }}
-              helperText="Please select job position"
+              helperText="Vui lòng chọn vị trí công việc"
               variant="standard"
               size="large"
               style={{ position: "relative" }}
@@ -406,12 +410,12 @@ function ShowEmp() {
               id="standard-select-currency-native"
               select
               onChange={(e) => setJobType(e.target.value)}
-              label="Job position"
+              label="Vị trí công việc"
               defaultValue="EUR"
               SelectProps={{
                 native: true,
               }}
-              helperText="Please select job position"
+              helperText="Vui lòng chọn vị trí công việc"
               variant="standard"
               size="large"
               style={{ position: "relative" }}
@@ -496,13 +500,13 @@ function ShowEmp() {
                 align="center"
                 style={{ color: "#ffffff", backgroundColor: "#324960" }}
               >
-                Name
+                Tên
               </TableCell>
               <TableCell
                 align="center"
                 style={{ color: "#ffffff", backgroundColor: "#4FC3A1" }}
               >
-                Gender
+                Giới tính
               </TableCell>
               <TableCell
                 align="center"
