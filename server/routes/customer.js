@@ -11,4 +11,6 @@ router.put('/updateCustomer', UpdateCustomer);//API: http://localhost:3001/api/a
 
 router.delete('/deleteCustomer', DeleteCustomer);//API: http://localhost:3001/api/admin/customer/deleteCustomer
 
+
+
 module.exports = router
