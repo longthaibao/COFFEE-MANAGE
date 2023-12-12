@@ -34,7 +34,11 @@ const SideBar = () => {
   const handleMenuActive = () => {
     active ? setActive(true) : setActive(false);
   };
-
+  const logout = async () => {
+		const expirationTime = new Date(Date.now() - 60 * 1000);
+		document.cookie = `admin_cookie_id=null; expires=${expirationTime.toUTCString()}; path=/`;
+		window.location.href = 'http://localhost:3000/login';
+  };
   return (
     <>
       <div id="header">
@@ -61,7 +65,7 @@ const SideBar = () => {
                 <Link to="/admin/thutuc1"> Danh sách nhân viên</Link>
               </MenuItem>
               <MenuItem icon={<HiOutlineCheck />}>
-                <Link to="/admin/thutuc2">Validation Congés</Link>
+                <Link to="/admin/thutuc2">Thống kê CTKM</Link>
               </MenuItem>
               {/* <MenuItem icon={<BiCog />}>Settings</MenuItem> */}
             </Menu>
@@ -69,7 +73,7 @@ const SideBar = () => {
           <SidebarFooter>
             <Menu iconShape="square">
               <MenuItem icon={<FiLogOut />}>
-                <Link to={"/logout"}>Logout</Link>
+                <Link onClick={logout}>Đăng xuất</Link>
               </MenuItem>
             </Menu>
           </SidebarFooter>

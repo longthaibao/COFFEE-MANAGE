@@ -27,7 +27,6 @@ export default function AdminInfo() {
 
     fetchApiData();
   }, []);
-
   return (
     <div
       style={{
