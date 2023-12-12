@@ -2,7 +2,6 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Table from "@mui/material/Table";
-import { red } from "@mui/material/colors";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -11,7 +10,9 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import axios from "axios";
-const custom = red[100];
+import Tippy from "@tippyjs/react/headless";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 const currencies = [
   {
     value: "Quản lý",
@@ -34,11 +35,258 @@ const currencies = [
     label: "Tạp vụ",
   },
 ];
-var newjob_type = "";
 function ShowEmp() {
   const [job_type, setJobType] = React.useState("Quản lý");
+  const [job_typeInsertEmploy, setjob_typeInsertEmploy] =
+    React.useState("Quản lý");
   const [job_typeOnClick, setJob_TypeOnClick] = React.useState("Quản lý");
+  const [employee_name, setEmployeeName] = React.useState("");
+  const [employee_gender, setEmployeeGender] = React.useState("Nam");
+  const [employee_email, setEmployeeEmail] = React.useState("");
   const [arrayOfEmp, setArrayOfEmp] = React.useState([]);
+  const [isShowInput, setIsShowInput] = React.useState(false);
+  const [editStates, setEditStates] = React.useState({});
+  const handleEditButtonClick = (ID) => {
+    setEditStates((prev) => ({
+      ...prev,
+      [ID]: !prev[ID],
+    }));
+  };
+
+  const handleShowCreateInput = () => {
+    setIsShowInput((pre) => !pre);
+  };
+  const fetchData = async () => {
+    try {
+      const respone = await axios.post(
+        "http://localhost:3001/api/admin/showInfoEmp/getInfoEmp",
+        { job_type }
+      );
+      setArrayOfEmp(respone.data);
+      setJob_TypeOnClick(job_type);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleSubmitCreateEmploy = async () => {
+    await axios
+      .post("http://localhost:3001/api/admin/showInfoEmp/create/employee", {
+        employee_name: employee_name,
+        employee_gender: employee_gender,
+        employee_email: employee_email,
+        job_type: job_typeInsertEmploy,
+      })
+      .then((res) => {
+        setIsShowInput(false);
+        fetchData();
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
+  const handleUpdateEmployee = async (
+    ID,
+    employee_name,
+    employee_gender,
+    employee_email
+  ) => {
+    await axios
+      .post("http://localhost:3001/api/admin/showInfoEmp/update/employee", {
+        ID,
+        employee_name,
+        employee_gender,
+        employee_email,
+      })
+      .then((res) => {
+        console.log(res);
+        setEditStates((prev) => ({
+          ...prev,
+          [ID]: !prev[ID],
+        }));
+        fetchData();
+      })
+      .catch((err) => console.log(err));
+  };
+  const handleDelete = async (ID) => {
+    await axios
+      .post("http://localhost:3001/api/admin/showInfoEmp/delete/employee", {
+        ID,
+      })
+      .then((res) => {
+        fetchData();
+      })
+      .catch((err) => console.log(err));
+  };
+  const handleEdit = (ID) => {
+    return (
+      <div style={{ display: "flex" }}>
+        <Box
+          component="form"
+          sx={{
+            "& .MuiTextField-root": { m: 1, width: "25ch" },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              maxHeight: "600px",
+              maxWidth: "540px",
+              backgroundColor: "white",
+              zIndex: 999,
+              padding: "50px",
+              borderRadius: "2%",
+              boxShadow:
+                "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px",
+            }}
+          >
+            <TextField
+              onChange={(e) => setEmployeeName(e.target.value)}
+              required
+              id="outlined-required"
+              label="Tên nhân viên"
+              placeholder="Tên nhân viên"
+            />
+            <TextField
+              onChange={(e) => setEmployeeGender(e.target.value)}
+              required
+              id="outlined-required"
+              label="Giới tính"
+              placeholder="Giới tính"
+            />
+            <TextField
+              onChange={(e) => setEmployeeEmail(e.target.value)}
+              required
+              id="outlined-required"
+              label="Email"
+              placeholder="Email"
+            />
+            <TextField
+              disabled
+              required
+              id="outlined-required"
+              label="ID"
+              value={ID}
+            />
+            <Button
+              style={{
+                minWidth: "100px",
+                backgroundColor: "#1dc1ff",
+                color: "#FFFFFF",
+                fontFamily: "sans-serif",
+                border: "1px solid #1899D6",
+                fontWeight: 700,
+                outline: "none",
+                margin: "20px",
+                borderWidth: "0 0 4px",
+                borderRadius: "16px",
+              }}
+              variant="contained"
+              onClick={() =>
+                handleUpdateEmployee(
+                  ID,
+                  employee_name,
+                  employee_gender,
+                  employee_email
+                )
+              }
+            >
+              Cập nhật
+            </Button>
+          </div>
+        </Box>
+      </div>
+    );
+  };
+  const renderInput = () => {
+    return (
+      <div style={{ display: "flex" }}>
+        <Box
+          component="form"
+          sx={{
+            "& .MuiTextField-root": { m: 1, width: "25ch" },
+          }}
+          noValidate
+          autoComplete="off"
+        >
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              maxHeight: "1000px",
+              maxWidth: "700px",
+              backgroundColor: "white",
+              zIndex: 999,
+              padding: "50px",
+              borderRadius: "2%",
+              boxShadow:
+                "rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px",
+            }}
+          >
+            <TextField
+              onChange={(e) => setEmployeeName(e.target.value)}
+              required
+              id="outlined-required"
+              label="Tên nhân viên"
+              placeholder="Tên nhân viên"
+            />
+            <TextField
+              onChange={(e) => setEmployeeGender(e.target.value)}
+              required
+              id="outlined-required"
+              label="Giới tính"
+              placeholder="Giới tính"
+            />
+            <TextField
+              onChange={(e) => setEmployeeEmail(e.target.value)}
+              required
+              id="outlined-required"
+              label="Email"
+              placeholder="Email"
+            />
+            <TextField
+              id="standard-select-currency-native"
+              select
+              onChange={(e) => setjob_typeInsertEmploy(e.target.value)}
+              label="Job position"
+              defaultValue="EUR"
+              SelectProps={{
+                native: true,
+              }}
+              helperText="Please select job position"
+              variant="standard"
+              size="large"
+              style={{ position: "relative" }}
+            >
+              {currencies.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+            <Button
+              style={{
+                minWidth: "100px",
+                backgroundColor: "#1dc1ff",
+                color: "#FFFFFF",
+                fontFamily: "sans-serif",
+                border: "1px solid #1899D6",
+                fontWeight: 700,
+                outline: "none",
+                borderWidth: "0 0 4px",
+                borderRadius: "16px",
+              }}
+              variant="contained"
+              onClick={handleSubmitCreateEmploy}
+            >
+              Tạo
+            </Button>
+          </div>
+        </Box>
+      </div>
+    );
+  };
   const handleSubmit = () => {
     axios
       .post("http://localhost:3001/api/admin/showInfoEmp/getInfoEmp", {
@@ -54,54 +302,98 @@ function ShowEmp() {
   };
   return (
     <div className="wrapper m-7">
-      <Box
-        className="m-8"
-        component="form"
-        sx={{
-          "& .MuiTextField-root": { m: 1, width: "25ch" },
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-around",
         }}
-        noValidate
-        autoComplete="off"
-        encType="multipart/form-data"
       >
-        <div>
-          <TextField
-            id="standard-select-currency-native"
-            select
-            onChange={(e) => setJobType(e.target.value)}
-            label="Job position"
-            defaultValue="EUR"
-            SelectProps={{
-              native: true,
-            }}
-            helperText="Please select job position"
-            variant="standard"
-            size="large"
-          >
-            {currencies.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </TextField>
-        </div>
-        <Button
-          style={{
-            backgroundColor: "#1dc1ff",
-            color: "#FFFFFF",
-            fontFamily: "sans-serif",
-            border: "1px solid #1899D6",
-            fontWeight: 700,
-            outline: "none",
-            borderWidth: "0 0 4px",
-            borderRadius: "16px",
+        <Box
+          className="m-8"
+          component="form"
+          sx={{
+            "& .MuiTextField-root": { m: 1, width: "25ch" },
           }}
-          variant="contained"
-          onClick={handleSubmit}
+          noValidate
+          autoComplete="off"
+          encType="multipart/form-data"
         >
-          Tìm kiếm
-        </Button>
-      </Box>
+          <div>
+            <TextField
+              id="standard-select-currency-native"
+              select
+              onChange={(e) => setJobType(e.target.value)}
+              label="Job position"
+              defaultValue="EUR"
+              SelectProps={{
+                native: true,
+              }}
+              helperText="Please select job position"
+              variant="standard"
+              size="large"
+              style={{ position: "relative" }}
+            >
+              {currencies.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </TextField>
+          </div>
+          <Button
+            style={{
+              backgroundColor: "#1dc1ff",
+              color: "#FFFFFF",
+              fontFamily: "sans-serif",
+              border: "1px solid #1899D6",
+              fontWeight: 700,
+              outline: "none",
+              borderWidth: "0 0 4px",
+              borderRadius: "16px",
+            }}
+            variant="contained"
+            onClick={handleSubmit}
+          >
+            Tìm kiếm
+          </Button>
+        </Box>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start",
+          }}
+        >
+          <Tippy
+            duration={[1050, 1050]}
+            render={renderInput}
+            interactive
+            visible={isShowInput}
+            placement="bottom-end"
+            offset={[-2, 0]}
+          >
+            <Button
+              style={{
+                backgroundColor: "#1dc1ff",
+                color: "#FFFFFF",
+                fontFamily: "sans-serif",
+                border: "1px solid #1899D6",
+                fontWeight: 700,
+                outline: "none",
+                borderWidth: "0 0 4px",
+                borderRadius: "16px",
+                margin: "20px",
+                right: "0",
+              }}
+              variant="contained"
+              onClick={handleShowCreateInput}
+            >
+              Thêm nhân viên
+            </Button>
+          </Tippy>
+        </div>
+      </div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
@@ -135,6 +427,12 @@ function ShowEmp() {
               >
                 Email
               </TableCell>
+              <TableCell
+                align="center"
+                style={{ color: "#ffffff", backgroundColor: "#324960" }}
+              >
+                Chỉnh sửa
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -148,6 +446,27 @@ function ShowEmp() {
                 <TableCell align="center">{row.employee_name}</TableCell>
                 <TableCell align="center">{row.employee_gender}</TableCell>
                 <TableCell align="center">{row.employee_email}</TableCell>
+                <TableCell align="center">
+                  <button
+                    onClick={() => handleDelete(row.ID)}
+                    style={{ margin: "5px" }}
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                  <Tippy
+                    interactive
+                    render={() => handleEdit(row.ID)}
+                    visible={editStates[row.ID] || false}
+                    placement="bottom-end"
+                  >
+                    <button
+                      onClick={() => handleEditButtonClick(row.ID)}
+                      style={{ margin: "5px" }}
+                    >
+                      <FontAwesomeIcon icon={faPenToSquare} />
+                    </button>
+                  </Tippy>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -156,5 +475,4 @@ function ShowEmp() {
     </div>
   );
 }
-
 export default ShowEmp;

@@ -207,16 +207,20 @@ BEGIN
         phone = p_phone;
 END //
 
-CREATE PROCEDURE DELETECUSTOMER(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DELETECUSTOMER`(
     IN p_phone VARCHAR(10)
 )
 BEGIN
-
-    -- Delete customer information
-    UPDATE customer
-    SET 
-		deleted = true
-    WHERE phone = p_phone;
+     IF EXISTS (SELECT 1 FROM bill WHERE bill_phone_cus = p_phone) THEN
+        -- If yes, set deleted to true in the bill table as well
+        UPDATE customer
+        SET deleted = true
+        WHERE phone= p_phone;
+    ELSE
+        -- If no, delete the customer from the customer table
+        DELETE FROM customer
+        WHERE phone = p_phone;
+    END IF;
 END //
 
 CREATE PROCEDURE showNV(IN job_type VARCHAR(45))
@@ -257,86 +261,85 @@ BEGIN
 		max_bill AS `Tổng tiền thu được từ KH chi nhiều tiền nhất (VNĐ)`
 	FROM
 	(
-	SELECT
-		KID,
-		coupoun_name,
-		COALESCE(SUM(sum_),0) AS sum_of_all_bill, -- tổng bill trong CTKM đó
-		COALESCE(MAX(sum_),0) AS max_bill, -- tổng bill của người lớn nhất trong CTKM đó
-		coupoun_start_date,
-		coupoun_end_date,
-		coupoun_quantity_limit,
-		coupoun_used_quantity,
-		conditions
-	FROM
-		(
-			SELECT 
-				KID,
-				coupoun_name,
-				coupoun_start_date,
-				coupoun_end_date,
-				coupoun_quantity_limit,
-				coupoun_used_quantity,
-				conditions,
-				bill_phone_cus,
-				SUM(bill_sum) AS sum_ -- tính tổng tiền của mỗi KH tham gia CTKM đó
-			FROM ( -- lấy thông tin bill + km (nếu có) + KH ứng mỗi bill
-				coupoun LEFT OUTER JOIN 
-					(SELECT bill_sum, bill_phone_cus, bill_date -- lấy thông tin những bill có khuyến mãi
-					FROM  
-						-- join bill + bill_coupoun_bill để biết được bill nào có KM theo hóa đơn
-						(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
-						-- join tiếp với product_bill_info (price = 0 -> những bill đã apply KM tặng thêm) để biết được bill nào có KM theo Sản phẩm
-						LEFT OUTER JOIN (SELECT * FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
-						ON csdl_database.bill.BID = pbi.product_bill_info_BID 
-						WHERE
-							coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
-					) AS coupoun_all_bill ON bill_date >= coupoun_start_date AND bill_date <= coupoun_end_date
-				)
-				LEFT OUTER JOIN customer ON coupoun_all_bill.bill_phone_cus = customer.phone
-			GROUP BY -- để xem mỗi CTKM có những ai tham gia
-				KID,
-				bill_phone_cus
-		) AS coupoun_customer
-	GROUP BY
-		KID
-	) AS ttt
-	LEFT OUTER JOIN
-	(
-	SELECT
-		bill_phone_cus,
-		customer.`name` AS name_,
-		SUM(bill_sum) AS sum_
-	FROM (
-			coupoun
-			LEFT OUTER JOIN
+		SELECT
+			KID,
+			coupoun_name,
+			COALESCE(SUM(sum_),0) AS sum_of_all_bill, -- tổng bill trong CTKM đó
+			COALESCE(MAX(sum_),0) AS max_bill, -- tổng bill của người lớn nhất trong CTKM đó
+			coupoun_start_date,
+			coupoun_end_date,
+			coupoun_quantity_limit,
+			coupoun_used_quantity,
+			conditions
+		FROM
 			(
-				SELECT bill_sum, bill_phone_cus, bill_date
-				FROM 
-					(bill LEFT OUTER JOIN bill_coupoun_bill ON BID = bill_BID)
-					LEFT OUTER JOIN 
-					(SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
-					ON
-						BID = product_bill_info_BID 
-				WHERE
-					coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
-			) AS s
-			ON bill_date >= coupoun_start_date AND bill_date <= coupoun_end_date
-		)
-		LEFT OUTER JOIN customer
-		ON s.bill_phone_cus = customer.phone
-	GROUP BY
-		KID,
-		bill_phone_cus
-	ORDER BY
-		KID,
-		sum_
-	) AS tss
-	ON ttt.max_bill = tss.sum_
+				SELECT 
+					KID,
+					coupoun_name,
+					coupoun_start_date,
+					coupoun_end_date,
+					coupoun_quantity_limit,
+					coupoun_used_quantity,
+					conditions,
+					bill_phone_cus,
+					SUM(bill_sum) AS sum_ -- tính tổng tiền của mỗi KH tham gia CTKM đó
+				FROM ( -- lấy thông tin bill + km (nếu có) + KH ứng mỗi bill
+					coupoun LEFT OUTER JOIN 
+						(SELECT bill_sum, bill_phone_cus, bill_date -- lấy thông tin những bill có khuyến mãi
+						FROM  
+							-- join bill + bill_coupoun_bill để biết được bill nào có KM theo hóa đơn
+							(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
+							-- join tiếp với product_bill_info (price = 0 -> những bill đã apply KM tặng thêm) để biết được bill nào có KM theo Sản phẩm
+							LEFT OUTER JOIN (SELECT * FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
+							ON csdl_database.bill.BID = pbi.product_bill_info_BID 
+							WHERE
+								coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
+						) AS coupoun_all_bill ON bill_date >= coupoun_start_date AND bill_date <= coupoun_end_date
+					)
+					LEFT OUTER JOIN customer ON coupoun_all_bill.bill_phone_cus = customer.phone
+				GROUP BY -- để xem mỗi CTKM có những ai tham gia
+					KID,
+					bill_phone_cus
+			) AS coupoun_customer
+		GROUP BY
+			KID
+		) AS ttt
+		LEFT OUTER JOIN
+		(
+		SELECT
+			bill_phone_cus,
+			customer.`name` AS name_,
+			SUM(bill_sum) AS sum_
+		FROM (
+				coupoun
+				LEFT OUTER JOIN
+				(
+					SELECT bill_sum, bill_phone_cus, bill_date
+					FROM 
+						(bill LEFT OUTER JOIN bill_coupoun_bill ON BID = bill_BID)
+						LEFT OUTER JOIN 
+						(SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
+						ON
+							BID = product_bill_info_BID 
+					WHERE
+						coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
+				) AS s
+				ON bill_date >= coupoun_start_date AND bill_date <= coupoun_end_date
+			)
+			LEFT OUTER JOIN customer
+			ON s.bill_phone_cus = customer.phone
+		GROUP BY
+			KID,
+			bill_phone_cus
+		) AS tss
+		ON ttt.max_bill = tss.sum_
 	WHERE
 		(p_year = 0)
 		OR YEAR(coupoun_start_date) = p_year
 		OR YEAR(coupoun_end_date) = p_year
 	HAVING
-		sum_of_all_bill >= revenue;
+		sum_of_all_bill >= revenue
+	ORDER BY
+		KID ASC;
 END //
 DELIMITER ;
