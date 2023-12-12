@@ -12,6 +12,7 @@ const login = require('./routes/login');
 const customer = require('./routes/customer');
 const showInfoEmp = require('./routes/showInfoEmp');
 const thutuc2 = require('./routes/thutuc2');
+const proRevenue = require('./routes/proRev')
 //init app object
 const app = express();
 // xác thực khi dùng APIs
@@ -34,6 +35,7 @@ app.use("/api/login", login);
 app.use('/api/admin/thutuc2', thutuc2);
 app.use("/api/admin/showInfoEmp", showInfoEmp);
 app.use('/api/admin/customer', customer);
+app.use('/api/admin/getProRev', proRevenue)
 
 
 app.listen(process.env.SV_PORT, "localhost", () => {

@@ -2,7 +2,7 @@ const mysql = require("mysql2/promise");
 const port = process.env.DB_PORT || 3306;
 const hostname = process.env.DB_HOST || "localhost";
 const username = process.env.DB_USER || "root";
-const password = process.env.DB_PASS || "baolong@123";
+const password = process.env.DB_PASS || "";
 const database = process.env.DB_NAME || "CSDL_database";
 
 const connection = mysql.createPool({

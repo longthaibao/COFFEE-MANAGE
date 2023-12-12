@@ -6,6 +6,7 @@ import Thutuc1 from "./pages/admin/thutuc1";
 import Thutuc2 from "./pages/admin/thutuc2";
 import Themxoasua from "./pages/admin/themxoasua";
 import Home from "./pages/home/home";
+import StoreRevenue from "./pages/admin/store";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/admin/" element={<LayoutAdmin />}>
           <Route index element={<homeAdmin />} />
           <Route path="test_laythongtincanhantubangemployee" element={<Testlaythongtincanhan />} />
+          <Route  path="store" element={<StoreRevenue/>}/>
           <Route path="themxoasua" element={<Themxoasua />} />
           <Route path="thutuc1" element={<Thutuc1 />} />
           <Route path="thutuc2" element={<Thutuc2 />} />

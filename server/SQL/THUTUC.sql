@@ -1,4 +1,4 @@
-USE csdl_database;
+USE CSDL_database;
 DELIMITER //
 CREATE PROCEDURE checkIfDiscount(
 	IN p_BID INT
@@ -150,9 +150,8 @@ END //
 
 CREATE PROCEDURE VIEWALLCUSTOMER()
 BEGIN
-	SELECT * FROM csdl_database.customer;
+	SELECT * FROM CSDL_database.customer;
 END //
-
 
 CREATE PROCEDURE INSERTCUSTOMER(
 	IN p_phone varchar(12),
@@ -228,10 +227,10 @@ BEGIN
 	FROM coupoun LEFT OUTER JOIN 
 		(SELECT BID, bill_sum, coupoun_KID, product_bill_info_BID, bill_date
 		FROM 
-			(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
+			(CSDL_database.bill LEFT OUTER JOIN CSDL_database.bill_coupoun_bill ON CSDL_database.bill.BID = CSDL_database.bill_coupoun_bill.bill_BID)
 			LEFT OUTER JOIN (SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS t2 
 			ON
-				csdl_database.bill.BID = t2.product_bill_info_BID 
+				CSDL_database.bill.BID = t2.product_bill_info_BID 
 			WHERE
 				coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL) AS s
 		ON bill_date BETWEEN coupoun_start_date AND coupoun_end_date
