@@ -99,12 +99,25 @@ BEGIN
         WHERE BID = p_BID;
     END IF;
 END;//
+
 CREATE PROCEDURE Login(IN p_id VARCHAR(30), IN p_pass VARCHAR(30))
 BEGIN
-    SELECT `AID`
+    DECLARE hashed_password VARCHAR(255);
+
+    SELECT `password` INTO hashed_password
     FROM `account`
-    WHERE `username` = p_id AND `password` = p_pass;
-END //
+    WHERE `username` = p_id;
+
+    IF hashed_password IS NOT NULL AND hashed_password = SHA2(CONCAT(p_pass, 'fc45c92ac5ad37b42824ea724d2f8f32'), 256) THEN
+        SELECT `AID`
+        FROM `account`
+        WHERE `username` = p_id;
+    ELSE
+        SELECT `AID`
+        FROM account
+        LIMIT 0;
+    END IF;
+END; //
 
 CREATE PROCEDURE GetAdminInfo(IN p_id VARCHAR(255))
 BEGIN
@@ -184,21 +197,25 @@ BEGIN
         phone = p_phone;
 END //
 
-CREATE PROCEDURE DELETECUSTOMER(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DELETECUSTOMER`(
     IN p_phone VARCHAR(10)
 )
 BEGIN
-
-    -- Delete customer information
-    UPDATE customer
-    SET 
-		deleted = true
-    WHERE phone = p_phone;
+     IF EXISTS (SELECT 1 FROM bill WHERE bill_phone_cus = p_phone) THEN
+        -- If yes, set deleted to true in the bill table as well
+        UPDATE customer
+        SET deleted = true
+        WHERE phone= p_phone;
+    ELSE
+        -- If no, delete the customer from the customer table
+        DELETE FROM customer
+        WHERE phone = p_phone;
+    END IF;
 END //
 
 CREATE PROCEDURE showNV(IN job_type VARCHAR(45))
 BEGIN
-SELECT 
+    SELECT 
         e.`ID`,
         e.`employee_name`,
         e.`employee_gender`,
@@ -212,7 +229,76 @@ SELECT
     JOIN 
         CSDL_database.`job_role` jr ON ej.`employee_job_JID` = jr.`JID`
     WHERE 
-        jr.`job_type` = job_type;
+        jr.`job_type` = job_type
+		AND e.`deleted` = 0
+    ORDER BY
+        e.`employee_name`;
+END//
+
+
+CREATE PROCEDURE insertEmployee(
+    IN emp_name VARCHAR(255),
+    IN emp_gender CHAR(10),
+    IN emp_email VARCHAR(255),
+    IN job_id INT
+)
+BEGIN
+	DECLARE next_id INT;
+	DECLARE emp_SID INT;
+    DECLARE emp_MID INT;
+	DECLARE deleted INT;
+    SELECT MAX(`ID`) + 1 INTO next_id FROM `CSDL_database`.`employee`;
+    SET emp_SID = 1;
+    SET emp_MID = 1;
+    SET deleted=0;
+    -- Insert the new employee with the next available ID
+    INSERT INTO `CSDL_database`.`employee` (
+        `ID`,
+        `employee_name`,
+        `employee_gender`,
+        `employee_email`,
+        `employee_SID`,
+        `employee_MID`,
+        `deleted`
+    ) VALUES (
+        next_id,
+        emp_name,
+        emp_gender,
+        emp_email,
+        emp_SID,
+        emp_MID,
+        deleted
+    );
+    -- Insert the new employee's ID and JID into the employee_job table
+    INSERT INTO `CSDL_database`.`employee_job` (
+        `employee_job_ID`,
+        `employee_job_JID`
+    ) VALUES (
+        next_id,
+        job_id
+    );
+END//
+
+
+CREATE PROCEDURE deleteEmployee(IN emp_id INT)
+BEGIN
+   UPDATE `CSDL_database`.`employee` SET `deleted` = 1 WHERE `ID` = emp_id;
+END//
+
+CREATE PROCEDURE updateEmployee(
+    IN emp_id INT,
+    IN new_name VARCHAR(255),
+    IN new_gender CHAR(10),
+    IN new_email VARCHAR(255)
+)
+BEGIN
+    UPDATE `CSDL_database`.`employee`
+    SET
+        `employee_name` = new_name,
+        `employee_gender` = new_gender,
+        `employee_email` = new_email
+    WHERE
+        `ID` = emp_id;
 END//
 
 CREATE PROCEDURE getCoupounHavingRevenueGreaterThanInputInThisYear (
@@ -223,32 +309,96 @@ BEGIN
     SELECT
 		KID AS `Mã CTKM`,
 		coupoun_name AS `Tên CTKM`,
-		COALESCE(SUM(bill_sum), 0) AS `Tổng doanh thu (VNĐ)`,
+		sum_of_all_bill AS `Tổng doanh thu của cả CTKM (VNĐ)`,
+		COALESCE(name_, 'Không có') AS `KH chi nhiều tiền nhất cho CTKM này`,
+        COALESCE(bill_phone_cus, 'Không có') AS `SĐT của KH chi nhiều tiền nhất cho CTKM này`,
+		max_bill AS `Tổng tiền thu được từ KH chi nhiều tiền nhất (VNĐ)`,
 		coupoun_start_date AS `Ngày bắt đầu (ngày/tháng/năm)`,
 		coupoun_end_date AS `Ngày kết thúc (ngày/tháng/năm)`,
 		coupoun_quantity_limit AS `Giới hạn số lần áp dụng`,
 		coupoun_used_quantity AS `Số lần đã áp dụng`,
-		conditions `Điều kiện để áp dụng KM`
-	FROM coupoun LEFT OUTER JOIN 
-		(SELECT BID, bill_sum, coupoun_KID, product_bill_info_BID, bill_date
-		FROM 
-			(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
-			LEFT OUTER JOIN (SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS t2 
-			ON
-				csdl_database.bill.BID = t2.product_bill_info_BID 
-			WHERE
-				coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL) AS s
-		ON bill_date BETWEEN coupoun_start_date AND coupoun_end_date
-	WHERE
-		(p_year = 0)
-        OR YEAR(coupoun_start_date) = p_year
-        OR YEAR(coupoun_end_date) = p_year
-	GROUP BY KID,
+		conditions AS `Điều kiện để áp dụng KM`
+	FROM
+	(
+	SELECT
+		KID,
+		coupoun_name,
+		COALESCE(SUM(sum_),0) AS sum_of_all_bill,
+		COALESCE(MAX(sum_),0) AS max_bill,
 		coupoun_start_date,
 		coupoun_end_date,
 		coupoun_quantity_limit,
 		coupoun_used_quantity,
 		conditions
-	HAVING COALESCE(SUM(bill_sum), 0) >= revenue;
+	FROM
+		(SELECT
+			KID,
+			coupoun_name,
+			coupoun_start_date,
+			coupoun_end_date,
+			coupoun_quantity_limit,
+			coupoun_used_quantity,
+			conditions,
+			bill_phone_cus,
+			SUM(bill_sum) AS sum_
+		FROM (
+			coupoun LEFT OUTER JOIN 
+			(SELECT bill_sum, bill_phone_cus, bill_date
+			FROM 
+				(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
+				LEFT OUTER JOIN (SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS t2 
+				ON
+					csdl_database.bill.BID = t2.product_bill_info_BID 
+				WHERE
+					coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL) AS s
+			ON bill_date BETWEEN coupoun_start_date AND coupoun_end_date) LEFT OUTER JOIN customer ON s.bill_phone_cus = customer.phone
+			GROUP BY
+				KID,
+				bill_phone_cus
+			ORDER BY
+				KID,
+				sum_
+			) AS t
+	GROUP BY
+		KID
+	) AS ttt
+	LEFT OUTER JOIN
+	(
+	SELECT
+		bill_phone_cus,
+		customer.`name` AS name_,
+		SUM(bill_sum) AS sum_
+	FROM (
+			coupoun
+			LEFT OUTER JOIN
+			(
+				SELECT bill_sum, bill_phone_cus, bill_date
+				FROM 
+					(bill LEFT OUTER JOIN bill_coupoun_bill ON BID = bill_BID)
+					LEFT OUTER JOIN 
+					(SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
+					ON
+						BID = product_bill_info_BID 
+				WHERE
+					coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
+			) AS s
+			ON bill_date BETWEEN coupoun_start_date AND coupoun_end_date
+		)
+		LEFT OUTER JOIN customer
+		ON s.bill_phone_cus = customer.phone
+	GROUP BY
+		KID,
+		bill_phone_cus
+	ORDER BY
+		KID,
+		sum_
+	) AS tss
+	ON ttt.max_bill = tss.sum_
+	WHERE
+		(p_year = 0)
+		OR YEAR(coupoun_start_date) = p_year
+		OR YEAR(coupoun_end_date) = p_year
+	HAVING
+		sum_of_all_bill >= revenue;
 END //
 DELIMITER ;
