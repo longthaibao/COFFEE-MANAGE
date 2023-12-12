@@ -5,8 +5,8 @@ import APIs from "../util/API";
 export default function LoginComponent() {
 
   const [formData, setFormData] = useState({
-    id: "john_doe",
-    pass: "password123",
+    id: "lequocan",
+    pass: "1234567",
   });
   const [notification, setNotification] = useState(null);
   const handleInputChange = (e) => {

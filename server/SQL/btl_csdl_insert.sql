@@ -166,17 +166,17 @@ VALUES
 
 INSERT INTO `coupoun` (`KID`, `coupoun_name`, `coupoun_des`, `coupoun_quantity_limit`, `coupoun_start_date`, `coupoun_end_date`, `conditions`)
 VALUES
-    (1, 'Chương trình khuyến mãi Tết Nguyên Đán 2021', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 3 tặng 1 với một số sản phẩm nhất định', 30, '2021-01-15', '2021-02-15', 3),
+    (1, 'Chương trình khuyến mãi Tết Nguyên Đán 2021', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 3 tặng 1 với một số sản phẩm nhất định', 30, '2021-01-15', '2021-02-14', 3),
     (2, 'Chương trình khuyến mãi Hè Sôi Động 2021', 'Giảm giá cho các sản phẩm mùa hè', 40, '2021-06-01', '2021-06-30', 35000),
     (3, 'Chương trình khuyến mãi Back-to-School 2021', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, '2021-09-01', '2021-09-30', 4),
     (4, 'Chương trình khuyến mãi Black Friday 2021', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, '2021-11-15', '2021-11-30', 50000),
     (5, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2021', 'Hấp dẫn khi mua sắm cuối năm', 35, '2021-12-10', '2021-12-15', 50000),
-    (6, 'Chương trình khuyến mãi Tết Nguyên Đán 2022', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 5 tặng 2 với một số sản phẩm nhất định', 30, '2022-01-15', '2022-02-15', 5),
+    (6, 'Chương trình khuyến mãi Tết Nguyên Đán 2022', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 5 tặng 2 với một số sản phẩm nhất định', 30, '2022-01-15', '2022-02-14', 5),
     (7, 'Chương trình khuyến mãi Hè Sôi Động 2022', 'Giảm giá cho các sản phẩm mùa hè: Mua 5 tặng 1 với một số sản phẩm nhất định', 40, '2022-06-01', '2022-06-30', 5),
     (8, 'Chương trình khuyến mãi Back-to-School 2022', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, '2022-09-01', '2022-09-30', 4),
     (9, 'Chương trình khuyến mãi Black Friday 2022', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, '2022-11-15', '2022-11-30', 40000),
     (10, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2022', 'Hấp dẫn khi mua sắm cuối năm', 35, '2022-12-01', '2022-12-15', 70000),
-    (11, 'Chương trình khuyến mãi Tết Nguyên Đán 2023', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 2 tặng 1 với một số sản phẩm nhất định', 30, '2023-01-15', '2023-02-15', 2),
+    (11, 'Chương trình khuyến mãi Tết Nguyên Đán 2023', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 2 tặng 1 với một số sản phẩm nhất định', 30, '2023-01-15', '2023-02-14', 2),
     (12, 'Chương trình khuyến mãi Hè Sôi Động 2023', 'Giảm giá cho các sản phẩm mùa hè', 40, '2023-06-01', '2023-06-30', 130000),
     (13, 'Chương trình khuyến mãi Back-to-School 2023', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, '2023-09-01', '2023-09-30', 4),
     (14, 'Chương trình khuyến mãi Black Friday 2023', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, '2023-11-15', '2023-11-30', 150000),
@@ -264,6 +264,10 @@ VALUES
 	(23, '0905342671', '2021-12-15'),
 	(24, '0934256738', '2021-12-30'),
 	(25, '0762345617', '2021-12-31');
+
+INSERT INTO `bill` (`BID`, `bill_phone_cus`, `bill_date`, `bill_store`, `bill_AID`)
+VALUES
+	(51, '0987653425', '2022-02-01', 2, 1);
 
 INSERT INTO `bill` (`BID`, `bill_phone_cus`, `bill_date`, `bill_store`, `bill_AID`)
 VALUES

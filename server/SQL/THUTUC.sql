@@ -1,8 +1,28 @@
 USE csdl_database;
+
 DELIMITER //
+CREATE PROCEDURE show_notification(IN custom_message VARCHAR(255))
+BEGIN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = custom_message;
+END;//
+
 CREATE PROCEDURE checkIfDiscount(
 	IN p_BID INT
 )
+-- Check hóa đơn có được apply CTKM nào hay không? khi đã nhập xong các sản phẩm của hóa đơn đó và set bill.state = 1 (state = 1 là nhập đơn xong):
+	-- Đầu tiên check ngày tạo hóa đơn có nằm trong ngày diễn ra CTKM nào không?
+		-- Nếu có thì tiếp tục check số lần áp dụng của CTKM đó để xem CTKM đó còn được apply hay không?
+			-- Nếu hóa đơn đó có thể apply CTKM theo hóa đơn thì: 
+				-- 1. insert vào bill_coupoun_bill (BID,KID,discount_value)
+												-- Nếu KM theo % thì: discount_value = giá trị phần trăm * tổng bill (tính xong còn check với giá trị tối đa được giảm)
+												-- Nếu KM theo tiền mặt thì: discount_value = giá trị tiền mặt
+				-- 2. update coupoun_used_quantity = coupoun_used_quantity + 1 của coupoun tương ứng
+			-- Nếu hóa đơn đó có thể apply CTKM theo sản phẩm thì:
+				-- 1. insert vào product_bill_info (PID,BID,quantity,price)
+												-- quantity là số lượng được tặng = 1 * số lượng mua DIV(chia nguyên) điều kiện áp dụng
+												-- rice = 0 (do tặng nên không tính tiền)
+				-- 2. update coupoun_used_quantity = coupoun_used_quantity + 1 của coupoun tương ứng
 BEGIN
 	DECLARE total_price_sum_var INT;
     DECLARE conditions_var INT;
@@ -180,6 +200,10 @@ BEGIN
 	SELECT * FROM csdl_database.customer;
 END //
 
+CREATE PROCEDURE GetCustomerData()
+BEGIN
+	SELECT * FROM csdl_database.bill;
+END //
 
 CREATE PROCEDURE INSERTCUSTOMER(
 	IN p_phone varchar(12),
@@ -225,7 +249,7 @@ END //
 
 CREATE PROCEDURE showNV(IN job_type VARCHAR(45))
 BEGIN
-SELECT 
+    SELECT 
         e.`ID`,
         e.`employee_name`,
         e.`employee_gender`,
@@ -239,7 +263,76 @@ SELECT
     JOIN 
         CSDL_database.`job_role` jr ON ej.`employee_job_JID` = jr.`JID`
     WHERE 
-        jr.`job_type` = job_type;
+        jr.`job_type` = job_type
+		AND e.`deleted` = 0
+    ORDER BY
+        e.`employee_name`;
+END//
+
+
+CREATE PROCEDURE insertEmployee(
+    IN emp_name VARCHAR(255),
+    IN emp_gender CHAR(10),
+    IN emp_email VARCHAR(255),
+    IN job_id INT
+)
+BEGIN
+	DECLARE next_id INT;
+	DECLARE emp_SID INT;
+    DECLARE emp_MID INT;
+	DECLARE deleted INT;
+    SELECT MAX(`ID`) + 1 INTO next_id FROM `CSDL_database`.`employee`;
+    SET emp_SID = 1;
+    SET emp_MID = 1;
+    SET deleted=0;
+    -- Insert the new employee with the next available ID
+    INSERT INTO `CSDL_database`.`employee` (
+        `ID`,
+        `employee_name`,
+        `employee_gender`,
+        `employee_email`,
+        `employee_SID`,
+        `employee_MID`,
+        `deleted`
+    ) VALUES (
+        next_id,
+        emp_name,
+        emp_gender,
+        emp_email,
+        emp_SID,
+        emp_MID,
+        deleted
+    );
+    -- Insert the new employee's ID and JID into the employee_job table
+    INSERT INTO `CSDL_database`.`employee_job` (
+        `employee_job_ID`,
+        `employee_job_JID`
+    ) VALUES (
+        next_id,
+        job_id
+    );
+END//
+
+
+CREATE PROCEDURE deleteEmployee(IN emp_id INT)
+BEGIN
+   UPDATE `CSDL_database`.`employee` SET `deleted` = 1 WHERE `ID` = emp_id;
+END//
+
+CREATE PROCEDURE updateEmployee(
+    IN emp_id INT,
+    IN new_name VARCHAR(255),
+    IN new_gender CHAR(10),
+    IN new_email VARCHAR(255)
+)
+BEGIN
+    UPDATE `CSDL_database`.`employee`
+    SET
+        `employee_name` = new_name,
+        `employee_gender` = new_gender,
+        `employee_email` = new_email
+    WHERE
+        `ID` = emp_id;
 END//
 
 CREATE PROCEDURE getCoupounHavingRevenueGreaterThanInputInThisYear (
