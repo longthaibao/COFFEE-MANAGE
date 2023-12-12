@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 const API_URL = 'http://localhost:3001/api/admin/order'; // Replace with your actual API URL
 
 const api = axios.create({
@@ -28,12 +29,16 @@ const apiEndpoints = {
             throw error;
         }
     },
-    insertCustomer: async (newCustomer) => {
+    getDetailBill: async (BID) => {
         try {
-            const response = await api.post('/insertCustomer', newCustomer);
+            console.log("BID", BID);
+            const formData = new FormData();
+            formData.append('BID', BID);
+            console.log("FormData:", ...formData);
+            const response = await api.post('/getdetailbill', BID);
             return response.data;
         } catch (error) {
-            console.error('Error inserting customer:', error);
+            console.error('Error fetching bill:', error);
             throw error;
         }
     },

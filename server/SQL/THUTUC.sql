@@ -200,21 +200,15 @@ BEGIN
 	SELECT * FROM csdl_database.customer;
 END //
 
-CREATE PROCEDURE GetCustomerData()
-BEGIN
-	SELECT * FROM csdl_database.bill;
-END //
 
 CREATE PROCEDURE INSERTCUSTOMER(
 	IN p_phone varchar(12),
-    IN p_name varchar(30),
-    IN p_score int,
-    IN p_deleted bool
+    IN p_name varchar(30)
 )
 BEGIN
 	 -- Insert customer information
-     insert into customer(phone,`name`,score,deleted)
-     values( p_phone, convert( p_name using utf8mb4) , p_score, p_deleted);
+     insert into customer(phone,`name`)
+     values( p_phone, convert( p_name using utf8mb4));
 END //
 
 CREATE PROCEDURE `UPDATECUSTOMER`(
@@ -435,4 +429,30 @@ BEGIN
 	ORDER BY
 		KID ASC;
 END //
+DELIMITER ;
+
+DELIMITER //
+
+
+CREATE PROCEDURE display_detail_bill(IN billID INT)
+BEGIN
+	SELECT product_name, product_size, product_bill_info_quantity as quantity, product_bill_info_price as price, product_bill_info_quantity*product_bill_info_price AS total
+	FROM bill b
+	JOIN product_bill pb ON pb.bill_BID = b.BID
+	JOIN product_bill_info pbi ON  pbi.product_bill_info_PID = pb.product_PID AND pbi.product_bill_info_BID = pb.bill_BID
+    JOIN product ON pb.product_PID = PID
+	LEFT JOIN bill_coupoun_bill bcb ON bcb.bill_BID  = pb.bill_BID
+    WHERE BID = billID;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE GetCustomerData()
+BEGIN
+	SELECT BID, bill_sum,state, bill_store, bill_date,`name`, phone,bill_AID,coupoun_KID, discount_value
+    FROM csdl_database.bill
+    JOIN customer ON bill_phone_cus = phone
+    LEFT JOIN bill_coupoun_bill bcb ON bcb.bill_BID  = BID;
+END//
 DELIMITER ;

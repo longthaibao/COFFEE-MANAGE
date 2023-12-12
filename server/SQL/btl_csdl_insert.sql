@@ -61,7 +61,7 @@ VALUES
     (1, 'lequocan', SHA2(CONCAT('1234567', 'fc45c92ac5ad37b42824ea724d2f8f32'), 256), 2),
     (2, 'liungocyen', SHA2(CONCAT('7654321', 'fc45c92ac5ad37b42824ea724d2f8f32'), 256), 1);
 
-INSERT INTO `product` (`PID`, `product_name`, `product_price`, `product_size`, `product_image`)
+INSERT INTO `product` (`PID`, `product_name`, `product_price`, `product_size`)
 VALUES
 	(1, 'Espresso', 45000, 'M'),
     (2, 'Espresso', 55000, 'L'),

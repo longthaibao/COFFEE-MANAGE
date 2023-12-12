@@ -35,7 +35,7 @@ app.use("/api/login", login);
 app.use('/api/admin/thutuc2', thutuc2);
 app.use("/api/admin/showInfoEmp", showInfoEmp);
 app.use('/api/admin/customer', customer);
-app.use('/api/admin/order',order);
+app.use('/api/admin/order', order);
 
 app.listen(process.env.SV_PORT, "localhost", () => {
   console.log(`Example app listening on port ${process.env.SV_PORT}`);
