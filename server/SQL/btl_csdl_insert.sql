@@ -267,10 +267,6 @@ VALUES
 
 INSERT INTO `bill` (`BID`, `bill_phone_cus`, `bill_date`, `bill_store`, `bill_AID`)
 VALUES
-	(51, '0987653425', '2022-02-01', 2, 1);
-
-INSERT INTO `bill` (`BID`, `bill_phone_cus`, `bill_date`, `bill_store`, `bill_AID`)
-VALUES
 	(26, '0987653425', '2022-02-01', 2, 2),
 	(27, '0953427162', '2022-04-30', 2, 2),
 	(28, '0762345617','2022-06-01', 2, 2),
