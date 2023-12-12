@@ -24,7 +24,7 @@ CREATE TABLE  IF NOT EXISTS `employee`
     `employee_gender` varchar(10),
     `employee_email` varchar(30) NOT NULL,
     `employee_SID` int NOT NULL,
-    `employee_MID` int NOT NULL,
+    `employee_MID` int, -- có thể null vì quản lý không cần ai quản lý
     PRIMARY KEY (`ID`),
     FOREIGN KEY (`employee_SID`) REFERENCES `store`(`SID`),
     FOREIGN KEY (`employee_MID`) REFERENCES `employee`(`ID`)
@@ -89,8 +89,8 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
  (
 	`phone` varchar(10) NOT NULL,
     `name` varchar(30) NOT NULL,
-    `score` int,
-    `deleted` bool  DEFAULT FALSE NOT NULL,
+    `score` int DEFAULT 0,
+    `deleted` bool DEFAULT FALSE NOT NULL,
     PRIMARY KEY(`phone`)
  );
  
@@ -99,14 +99,14 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`BID` int NOT NULL,
     `state` int NOT NULL DEFAULT 0, -- 0: đang nhập, 1: hoàn tất hóa đơn (đã check CTKM và giảm giá nếu có), 2: đã thanh toán
     `bill_sum` int NOT NULL DEFAULT 0,
-    `bill_store` int NOT NULL,
+    `bill_store` int NOT NULL DEFAULT 1, -- set default = 1 vì An làm tại CH có store id = 1
     `bill_phone_cus` varchar(10) NOT NULL, 
-    `bill_date` DATE NOT NULL, 
-    `bill_AID` int NOT NULL DEFAULT 1,
+    `bill_date` DATE NOT NULL, -- ngày nhập
+    `bill_AID` int NOT NULL DEFAULT 1, -- default account có ID = 1 -> An
     PRIMARY KEY (`BID`),
     FOREIGN KEY (`bill_store`) REFERENCES `store` (`SID`),
     FOREIGN KEY (`bill_AID`) REFERENCES `account` (`AID`),
-    FOREIGN KEY (`bill_phone_cus`) REFERENCES `customer`  (`phone`)
+    FOREIGN KEY (`bill_phone_cus`) REFERENCES `customer`  (`phone`) ON UPDATE CASCADE
  );
  
  CREATE TABLE IF NOT EXISTS `product_bill`
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `quantity` int NOT NULL,
     `date` DATE NOT NULL,
     PRIMARY KEY (`customer_phone`,`gift_GID`),
-    FOREIGN KEY (`customer_phone`) REFERENCES `customer` (`phone`),
+    FOREIGN KEY (`customer_phone`) REFERENCES `customer` (`phone`) ON UPDATE CASCADE,
     FOREIGN KEY (`gift_GID`) REFERENCES `gift` (`GID`)
  );
  
@@ -201,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `coupoun`
     `coupoun_name` varchar(255) NOT NULL,
     `coupoun_des` longtext NOT NULL,
     `coupoun_quantity_limit` int NOT NULL,
-    `coupoun_used_quantity`  int NOT NULL,
+    `coupoun_used_quantity`  int NOT NULL DEFAULT 0,
     `coupoun_start_date` DATE NOT NULL,
     `coupoun_end_date` DATE NOT NULL,
     `conditions` int NOT NULL,
@@ -255,12 +255,39 @@ BEGIN
     SET bill_sum = bill_sum + (NEW.product_bill_info_quantity * NEW.product_bill_info_price)
     WHERE BID = NEW.product_bill_info_BID;
 END; //
+
 CREATE TRIGGER insert_bill_coupoun_bill_trigger -- trừ bill_sum khi có một CTKM được apply lên bill đó
 AFTER INSERT ON bill_coupoun_bill
 FOR EACH ROW
 BEGIN
 	UPDATE bill
-    SET bill_sum = bill_sum - NEW.discount_value, state = 1 
+    SET bill_sum = bill_sum - NEW.discount_value
     WHERE BID = NEW.bill_BID;
 END //	
+
+CREATE TRIGGER update_customer_score  -- tính điểm khi hóa đơn thanh toán
+AFTER UPDATE ON bill
+FOR EACH ROW
+BEGIN
+    IF NEW.state = 2 THEN
+        UPDATE customer
+        SET score = score + NEW.bill_sum / 1000
+        WHERE phone = NEW.bill_phone_cus;
+    END IF;
+END //
+
+CREATE TRIGGER deduct_gift_score
+AFTER INSERT ON customer_gift
+FOR EACH ROW
+BEGIN
+    DECLARE gift_score_value INT;
+
+    SELECT gift_score INTO gift_score_value
+    FROM gift
+    WHERE GID = NEW.gift_GID;
+
+    UPDATE customer
+    SET score = score - gift_score_value * NEW.quantity
+    WHERE phone = NEW.customer_phone;
+END //
 DELIMITER ;
