@@ -63,16 +63,16 @@ VALUES
 
 INSERT INTO `product` (`PID`, `product_name`, `product_price`, `product_size`, `product_image`)
 VALUES
-	(1, 'Espresso', 45000, 'M', 'espresso_image.jpg'),
-    (2, 'Espresso', 55000, 'L', 'espresso_image.jpg'),
-    (3, 'Cappuccino', 45000, 'M', 'cappuccino_image.jpg'),
-    (4, 'Cappuccino', 55000, 'L', 'cappuccino_image.jpg'),
-    (5, 'Latte', 48000, 'M', 'latte_image.jpg'),
-    (6, 'Latte', 57000, 'L', 'latte_image.jpg'),
-    (7, 'Mocha', 40000, 'M', 'mocha_image.jpg'),
-    (8, 'Mocha', 48000, 'L', 'mocha_image.jpg'),
-    (9, 'Americano', 45000, 'M', 'americano_image.jpg'),
-    (10, 'Americano', 55000, 'L', 'americano_image.jpg');
+	(1, 'Espresso', 45000, 'M'),
+    (2, 'Espresso', 55000, 'L'),
+    (3, 'Cappuccino', 45000, 'M'),
+    (4, 'Cappuccino', 55000, 'L'),
+    (5, 'Latte', 48000, 'M'),
+    (6, 'Latte', 57000, 'L'),
+    (7, 'Mocha', 40000, 'M'),
+    (8, 'Mocha', 48000, 'L'),
+    (9, 'Americano', 45000, 'M'),
+    (10, 'Americano', 55000, 'L');
     -- Xóa các sản phẩm từ 11-30 vì quá nhiều
 
 INSERT INTO `store_product` (`product_PID`, `store_SID`)
