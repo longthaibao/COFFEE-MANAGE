@@ -153,6 +153,10 @@ BEGIN
 	SELECT * FROM csdl_database.customer;
 END //
 
+CREATE PROCEDURE GetCustomerData()
+BEGIN
+	SELECT * FROM csdl_database.bill;
+END //
 
 CREATE PROCEDURE INSERTCUSTOMER(
 	IN p_phone varchar(12),

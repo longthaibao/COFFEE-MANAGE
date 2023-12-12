@@ -63,6 +63,9 @@ const SideBar = () => {
               <MenuItem icon={<HiOutlineCheck />}>
                 <Link to="/admin/thutuc2">Thống kê CTKM</Link>
               </MenuItem>
+              <MenuItem icon={<HiOutlineCheck />}>
+                <Link to="/admin/hoadon">Quản lý hóa đơn</Link>
+              </MenuItem>
               {/* <MenuItem icon={<BiCog />}>Settings</MenuItem> */}
             </Menu>
           </SidebarContent>
