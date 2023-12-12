@@ -95,7 +95,7 @@ END //
 
 CREATE PROCEDURE showNV(IN job_type VARCHAR(45))
 BEGIN
-SELECT 
+    SELECT 
         e.`ID`,
         e.`employee_name`,
         e.`employee_gender`,
@@ -109,7 +109,74 @@ SELECT
     JOIN 
         CSDL_database.`job_role` jr ON ej.`employee_job_JID` = jr.`JID`
     WHERE 
-        jr.`job_type` = job_type;
+        jr.`job_type` = job_type
+		AND e.`deleted` = 0
+    ORDER BY
+        e.`employee_name`;
 END//
 
+CREATE PROCEDURE insertEmployee(
+    IN emp_name VARCHAR(255),
+    IN emp_gender CHAR(10),
+    IN emp_email VARCHAR(255),
+    IN job_id INT
+)
+BEGIN
+	DECLARE next_id INT;
+	DECLARE emp_SID INT;
+    DECLARE emp_MID INT;
+	DECLARE deleted INT;
+    SELECT MAX(`ID`) + 1 INTO next_id FROM `CSDL_database`.`employee`;
+    SET emp_SID = 1;
+    SET emp_MID = 1;
+    SET deleted=0;
+    -- Insert the new employee with the next available ID
+    INSERT INTO `CSDL_database`.`employee` (
+        `ID`,
+        `employee_name`,
+        `employee_gender`,
+        `employee_email`,
+        `employee_SID`,
+        `employee_MID`,
+        `deleted`
+    ) VALUES (
+        next_id,
+        emp_name,
+        emp_gender,
+        emp_email,
+        emp_SID,
+        emp_MID,
+        deleted
+    );
+    -- Insert the new employee's ID and JID into the employee_job table
+    INSERT INTO `CSDL_database`.`employee_job` (
+        `employee_job_ID`,
+        `employee_job_JID`
+    ) VALUES (
+        next_id,
+        job_id
+    );
+END//
+
+
+CREATE PROCEDURE deleteEmployee(IN emp_id INT)
+BEGIN
+   UPDATE `CSDL_database`.`employee` SET `deleted` = 1 WHERE `ID` = emp_id;
+END//
+
+CREATE PROCEDURE updateEmployee(
+    IN emp_id INT,
+    IN new_name VARCHAR(255),
+    IN new_gender CHAR(10),
+    IN new_email VARCHAR(255)
+)
+BEGIN
+    UPDATE `CSDL_database`.`employee`
+    SET
+        `employee_name` = new_name,
+        `employee_gender` = new_gender,
+        `employee_email` = new_email
+    WHERE
+        `ID` = emp_id;
+END//
 DELIMITER ;

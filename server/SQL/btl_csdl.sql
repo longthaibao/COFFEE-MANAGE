@@ -25,6 +25,7 @@ CREATE TABLE  IF NOT EXISTS `employee`
     `employee_email` varchar(30) NOT NULL,
     `employee_SID` int NOT NULL,
     `employee_MID` int NOT NULL,
+    `deleted` int NOT NULL DEFAULT 0,
     PRIMARY KEY (`ID`),
     FOREIGN KEY (`employee_SID`) REFERENCES `store`(`SID`),
     FOREIGN KEY (`employee_MID`) REFERENCES `employee`(`ID`)
