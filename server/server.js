@@ -40,5 +40,3 @@ app.use('/api/admin/order',order);
 app.listen(process.env.SV_PORT, "localhost", () => {
   console.log(`Example app listening on port ${process.env.SV_PORT}`);
 });
-
-

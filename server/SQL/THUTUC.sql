@@ -1,13 +1,35 @@
 USE csdl_database;
+
 DELIMITER //
+CREATE PROCEDURE show_notification(IN custom_message VARCHAR(255))
+BEGIN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = custom_message;
+END;//
+
 CREATE PROCEDURE checkIfDiscount(
 	IN p_BID INT
 )
+-- Check hóa đơn có được apply CTKM nào hay không? khi đã nhập xong các sản phẩm của hóa đơn đó và set bill.state = 1 (state = 1 là nhập đơn xong):
+	-- Đầu tiên check ngày tạo hóa đơn có nằm trong ngày diễn ra CTKM nào không?
+		-- Nếu có thì tiếp tục check số lần áp dụng của CTKM đó để xem CTKM đó còn được apply hay không?
+			-- Nếu hóa đơn đó có thể apply CTKM theo hóa đơn thì: 
+				-- 1. insert vào bill_coupoun_bill (BID,KID,discount_value)
+												-- Nếu KM theo % thì: discount_value = giá trị phần trăm * tổng bill (tính xong còn check với giá trị tối đa được giảm)
+												-- Nếu KM theo tiền mặt thì: discount_value = giá trị tiền mặt
+				-- 2. update coupoun_used_quantity = coupoun_used_quantity + 1 của coupoun tương ứng
+			-- Nếu hóa đơn đó có thể apply CTKM theo sản phẩm thì:
+				-- 1. insert vào product_bill_info (PID,BID,quantity,price)
+												-- quantity là số lượng được tặng = 1 * số lượng mua DIV(chia nguyên) điều kiện áp dụng
+												-- rice = 0 (do tặng nên không tính tiền)
+				-- 2. update coupoun_used_quantity = coupoun_used_quantity + 1 của coupoun tương ứng
 BEGIN
 	DECLARE total_price_sum_var INT;
     DECLARE conditions_var INT;
     DECLARE KID_var INT;
     DECLARE discount_value_var INT;
+    DECLARE used INT;
+    DECLARE limit_ INT;
     DECLARE bill_date_var DATE;
     
     SELECT
@@ -17,82 +39,93 @@ BEGIN
     LIMIT 1;
     
     SELECT
-		conditions,KID INTO conditions_var,KID_var
+		conditions,KID,coupoun_used_quantity,coupoun_quantity_limit INTO conditions_var,KID_var,used,limit_
 	FROM
 		coupoun
 	WHERE
-		bill_date_var BETWEEN coupoun_start_date AND coupoun_end_date;
+		bill_date_var >= coupoun_start_date AND bill_date_var <= coupoun_end_date;
         
-    IF conditions_var IS NOT NULL THEN 
-        IF conditions_var >= 1000 THEN
-			IF total_price_sum_var >= conditions_var THEN
-				INSERT INTO
-					bill_coupoun_bill (bill_BID, coupoun_KID, discount_value)
-				VALUES(
-					p_BID,
-					KID_var,
-					CASE
-						WHEN (SELECT flag_cash FROM coupoun_bill WHERE KID = KID_var) = 1 THEN
-							(SELECT cash_value FROM coupoun_bill WHERE KID = KID_var)
-						ELSE
-							CASE
-								WHEN (SELECT flag_percent FROM coupoun_bill WHERE KID = KID_var) = 1 AND
-									 (SELECT percent_value * total_price_sum_var FROM coupoun_bill WHERE KID = KID_var) >=
-									 (SELECT coupoun_bill_max_discount FROM coupoun_bill WHERE KID = KID_var) THEN
-									(SELECT coupoun_bill_max_discount FROM coupoun_bill WHERE KID = KID_var)
-								ELSE
-									(SELECT percent_value * total_price_sum_var FROM coupoun_bill WHERE KID = KID_var)
-							END
-					END
-				);
-                UPDATE
-					coupoun
-                SET coupoun_used_quantity = coupoun_used_quantity + 1
-                WHERE KID = KID_var;
+    IF used IS NOT NULL THEN 
+		IF used < limit_ THEN
+			IF conditions_var >= 1000 THEN
+				IF total_price_sum_var >= conditions_var THEN
+					INSERT INTO
+						bill_coupoun_bill (bill_BID, coupoun_KID, discount_value)
+					VALUES
+					(
+						p_BID,
+						KID_var,
+						CASE
+							WHEN (SELECT flag_cash FROM coupoun_bill WHERE KID = KID_var) = 1 THEN
+								(SELECT cash_value FROM coupoun_bill WHERE KID = KID_var)
+							ELSE
+								CASE
+									WHEN (SELECT flag_percent FROM coupoun_bill WHERE KID = KID_var) = 1 AND
+										 (SELECT percent_value * total_price_sum_var FROM coupoun_bill WHERE KID = KID_var) >=
+										 (SELECT coupoun_bill_max_discount FROM coupoun_bill WHERE KID = KID_var) THEN
+										(SELECT coupoun_bill_max_discount FROM coupoun_bill WHERE KID = KID_var)
+									ELSE
+										(SELECT percent_value * total_price_sum_var FROM coupoun_bill WHERE KID = KID_var)
+								END
+						END
+					);
+					UPDATE
+						coupoun
+					SET coupoun_used_quantity = coupoun_used_quantity + 1
+					WHERE KID = KID_var;
+					UPDATE bill
+					SET state = 1
+					WHERE BID = p_BID;
+				ELSE
+					UPDATE bill
+					SET state = 1
+					WHERE BID = p_BID;
+				END IF;
 			ELSE
+				CREATE TEMPORARY TABLE temp_result_table ( -- lấy thông tin sản phẩm nào trong bill nào được tặng bao nhiêu
+					product_bill_info_PID INT, -- sản phẩm
+					product_bill_info_BID INT, -- bill
+					calculated_value INT -- số lượng được tặng
+				);
+				INSERT INTO temp_result_table (product_bill_info_PID, product_bill_info_BID, calculated_value)
+					SELECT
+						product_bill_info_PID,
+						product_bill_info_BID,
+						1 * (product_bill_info_quantity DIV conditions_VAR) AS calculated_value
+					FROM
+						product_bill_info
+						JOIN (
+							product_coupoun_product AS p1 -- biết được mỗi CTKM sẽ tặng mấy và apply cho những sản phẩm nào
+							JOIN coupoun_product ON p1.coupoun_KID = coupoun_product.KID
+						) ON
+							product_bill_info.product_bill_info_PID = p1.product_PID
+							AND product_bill_info.product_bill_info_BID = p_BID
+							AND p1.coupoun_KID = KID_var
+						JOIN coupoun ON coupoun.KID = KID_var -- lấy 
+					WHERE
+						product_bill_info_quantity >= conditions_var;
+				IF (SELECT COUNT(*) FROM temp_result_table) > 0 THEN
+					INSERT INTO product_bill_info (product_bill_info_PID, product_bill_info_BID, product_bill_info_quantity, product_bill_info_price)
+						SELECT
+							product_bill_info_PID,
+							product_bill_info_BID,
+							calculated_value,
+							0
+						FROM temp_result_table;
+					UPDATE coupoun
+					SET coupoun_used_quantity = coupoun_used_quantity + 1
+					WHERE KID = KID_var;
+				END IF;
+				DROP TEMPORARY TABLE IF EXISTS temp_result_table;
 				UPDATE bill
 				SET state = 1
 				WHERE BID = p_BID;
 			END IF;
 		ELSE
-			CREATE TEMPORARY TABLE temp_result_table (
-				product_bill_info_PID INT,
-				product_bill_info_BID INT,
-				calculated_value INT
-			);
-			INSERT INTO temp_result_table (product_bill_info_PID, product_bill_info_BID, calculated_value)
-				SELECT
-					product_bill_info_PID,
-					product_bill_info_BID,
-					1 * (product_bill_info_quantity DIV conditions_VAR) AS calculated_value
-				FROM
-					product_bill_info
-					JOIN (
-						product_coupoun_product AS p1
-						JOIN coupoun_product ON p1.coupoun_KID = coupoun_product.KID
-					) ON product_bill_info.product_bill_info_PID = p1.product_PID
-					AND product_bill_info.product_bill_info_BID = p_BID
-					AND p1.coupoun_KID = KID_var
-					JOIN coupoun ON coupoun.KID = KID_var
-				WHERE
-					product_bill_info_quantity >= conditions_var;
-			IF (SELECT COUNT(*) FROM temp_result_table) > 0 THEN
-				INSERT INTO product_bill_info (product_bill_info_PID, product_bill_info_BID, product_bill_info_quantity, product_bill_info_price)
-				SELECT
-					product_bill_info_PID,
-					product_bill_info_BID,
-					calculated_value,
-					0
-				FROM temp_result_table;
-				UPDATE coupoun
-				SET coupoun_used_quantity = coupoun_used_quantity + 1
-				WHERE KID = KID_var;
-			END IF;
-			DROP TEMPORARY TABLE IF EXISTS temp_result_table;
-            UPDATE bill
+			UPDATE bill
 			SET state = 1
 			WHERE BID = p_BID;
-        END IF;
+		END IF;
 	ELSE
 		UPDATE bill
         SET state = 1
@@ -126,7 +159,7 @@ BEGIN
     DECLARE emp_name VARCHAR(45);
     DECLARE emp_gender VARCHAR(10);
     DECLARE emp_email VARCHAR(30);
-    DECLARE emp_sid INT;
+    DECLARE emp_sid VARCHAR(30);
     DECLARE emp_mid INT;
 
     -- Retrieve employee information based on the account ID
@@ -135,7 +168,7 @@ BEGIN
         E.`employee_name`,
         E.`employee_gender`,
         E.`employee_email`,
-        E.`employee_SID`,
+        S.`store_name`,
         E.`employee_MID`
     INTO
         emp_id,
@@ -148,6 +181,7 @@ BEGIN
         `account` A
     JOIN
         `employee` E ON A.`employee_ID` = E.`ID`
+	JOIN `store` S ON E.`employee_SID` = S.SID
     WHERE
         A.`AID` = p_id;
 
@@ -309,96 +343,96 @@ BEGIN
     SELECT
 		KID AS `Mã CTKM`,
 		coupoun_name AS `Tên CTKM`,
-		sum_of_all_bill AS `Tổng doanh thu của cả CTKM (VNĐ)`,
-		COALESCE(name_, 'Không có') AS `KH chi nhiều tiền nhất cho CTKM này`,
-        COALESCE(bill_phone_cus, 'Không có') AS `SĐT của KH chi nhiều tiền nhất cho CTKM này`,
-		max_bill AS `Tổng tiền thu được từ KH chi nhiều tiền nhất (VNĐ)`,
+		sum_of_all_bill AS `Tổng doanh thu của CTKM (VNĐ)`,
 		coupoun_start_date AS `Ngày bắt đầu (ngày/tháng/năm)`,
 		coupoun_end_date AS `Ngày kết thúc (ngày/tháng/năm)`,
 		coupoun_quantity_limit AS `Giới hạn số lần áp dụng`,
 		coupoun_used_quantity AS `Số lần đã áp dụng`,
-		conditions AS `Điều kiện để áp dụng KM`
+		conditions AS `Điều kiện để áp dụng KM`,
+        COALESCE(name_, 'Không có') AS `KH chi nhiều tiền nhất cho CTKM này`,
+        COALESCE(bill_phone_cus, 'Không có') AS `SĐT của KH chi nhiều tiền nhất cho CTKM này`,
+		max_bill AS `Tổng tiền thu được từ KH chi nhiều tiền nhất (VNĐ)`
 	FROM
 	(
-	SELECT
-		KID,
-		coupoun_name,
-		COALESCE(SUM(sum_),0) AS sum_of_all_bill,
-		COALESCE(MAX(sum_),0) AS max_bill,
-		coupoun_start_date,
-		coupoun_end_date,
-		coupoun_quantity_limit,
-		coupoun_used_quantity,
-		conditions
-	FROM
-		(SELECT
+		SELECT
 			KID,
 			coupoun_name,
+			COALESCE(SUM(sum_),0) AS sum_of_all_bill, -- tổng bill trong CTKM đó
+			COALESCE(MAX(sum_),0) AS max_bill, -- tổng bill của người lớn nhất trong CTKM đó
 			coupoun_start_date,
 			coupoun_end_date,
 			coupoun_quantity_limit,
 			coupoun_used_quantity,
-			conditions,
+			conditions
+		FROM
+			(
+				SELECT 
+					KID,
+					coupoun_name,
+					coupoun_start_date,
+					coupoun_end_date,
+					coupoun_quantity_limit,
+					coupoun_used_quantity,
+					conditions,
+					bill_phone_cus,
+					SUM(bill_sum) AS sum_ -- tính tổng tiền của mỗi KH tham gia CTKM đó
+				FROM ( -- lấy thông tin bill + km (nếu có) + KH ứng mỗi bill
+					coupoun LEFT OUTER JOIN 
+						(SELECT bill_sum, bill_phone_cus, bill_date -- lấy thông tin những bill có khuyến mãi
+						FROM  
+							-- join bill + bill_coupoun_bill để biết được bill nào có KM theo hóa đơn
+							(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
+							-- join tiếp với product_bill_info (price = 0 -> những bill đã apply KM tặng thêm) để biết được bill nào có KM theo Sản phẩm
+							LEFT OUTER JOIN (SELECT * FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
+							ON csdl_database.bill.BID = pbi.product_bill_info_BID 
+							WHERE
+								coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
+						) AS coupoun_all_bill ON bill_date >= coupoun_start_date AND bill_date <= coupoun_end_date
+					)
+					LEFT OUTER JOIN customer ON coupoun_all_bill.bill_phone_cus = customer.phone
+				GROUP BY -- để xem mỗi CTKM có những ai tham gia
+					KID,
+					bill_phone_cus
+			) AS coupoun_customer
+		GROUP BY
+			KID
+		) AS ttt
+		LEFT OUTER JOIN
+		(
+		SELECT
 			bill_phone_cus,
+			customer.`name` AS name_,
 			SUM(bill_sum) AS sum_
 		FROM (
-			coupoun LEFT OUTER JOIN 
-			(SELECT bill_sum, bill_phone_cus, bill_date
-			FROM 
-				(csdl_database.bill LEFT OUTER JOIN csdl_database.bill_coupoun_bill ON csdl_database.bill.BID = csdl_database.bill_coupoun_bill.bill_BID)
-				LEFT OUTER JOIN (SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS t2 
-				ON
-					csdl_database.bill.BID = t2.product_bill_info_BID 
-				WHERE
-					coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL) AS s
-			ON bill_date BETWEEN coupoun_start_date AND coupoun_end_date) LEFT OUTER JOIN customer ON s.bill_phone_cus = customer.phone
-			GROUP BY
-				KID,
-				bill_phone_cus
-			ORDER BY
-				KID,
-				sum_
-			) AS t
-	GROUP BY
-		KID
-	) AS ttt
-	LEFT OUTER JOIN
-	(
-	SELECT
-		bill_phone_cus,
-		customer.`name` AS name_,
-		SUM(bill_sum) AS sum_
-	FROM (
-			coupoun
-			LEFT OUTER JOIN
-			(
-				SELECT bill_sum, bill_phone_cus, bill_date
-				FROM 
-					(bill LEFT OUTER JOIN bill_coupoun_bill ON BID = bill_BID)
-					LEFT OUTER JOIN 
-					(SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
-					ON
-						BID = product_bill_info_BID 
-				WHERE
-					coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
-			) AS s
-			ON bill_date BETWEEN coupoun_start_date AND coupoun_end_date
-		)
-		LEFT OUTER JOIN customer
-		ON s.bill_phone_cus = customer.phone
-	GROUP BY
-		KID,
-		bill_phone_cus
-	ORDER BY
-		KID,
-		sum_
-	) AS tss
-	ON ttt.max_bill = tss.sum_
+				coupoun
+				LEFT OUTER JOIN
+				(
+					SELECT bill_sum, bill_phone_cus, bill_date
+					FROM 
+						(bill LEFT OUTER JOIN bill_coupoun_bill ON BID = bill_BID)
+						LEFT OUTER JOIN 
+						(SELECT product_bill_info_BID FROM product_bill_info WHERE product_bill_info_price = 0) AS pbi 
+						ON
+							BID = product_bill_info_BID 
+					WHERE
+						coupoun_KID IS NOT NULL OR product_bill_info_BID IS NOT NULL
+				) AS s
+				ON bill_date >= coupoun_start_date AND bill_date <= coupoun_end_date
+			)
+			LEFT OUTER JOIN customer
+			ON s.bill_phone_cus = customer.phone
+		GROUP BY
+			KID,
+			bill_phone_cus
+		) AS tss
+		ON ttt.max_bill = tss.sum_
 	WHERE
 		(p_year = 0)
 		OR YEAR(coupoun_start_date) = p_year
 		OR YEAR(coupoun_end_date) = p_year
 	HAVING
-		sum_of_all_bill >= revenue;
+		sum_of_all_bill >= revenue
+	ORDER BY
+		KID ASC;
 END //
 DELIMITER ;
