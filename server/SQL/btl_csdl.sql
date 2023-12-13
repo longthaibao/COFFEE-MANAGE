@@ -27,8 +27,8 @@ CREATE TABLE  IF NOT EXISTS `employee`
     `employee_MID` int, -- có thể null vì quản lý không cần ai quản lý
 	`deleted` int NOT NULL DEFAULT 0,
     PRIMARY KEY (`ID`),
-    FOREIGN KEY (`employee_SID`) REFERENCES `store`(`SID`),
-    FOREIGN KEY (`employee_MID`) REFERENCES `employee`(`ID`)
+    FOREIGN KEY (`employee_SID`) REFERENCES `store`(`SID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`employee_MID`) REFERENCES `employee`(`ID`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `employee_phone`
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`employee_phone_ID` int NOT NULL,
     `employee_phone_phone` varchar(10),
     PRIMARY KEY(`employee_phone_ID`,`employee_phone_phone`),
-    FOREIGN KEY (`employee_phone_ID`) REFERENCES `employee` (`ID`)
+    FOREIGN KEY (`employee_phone_ID`) REFERENCES `employee` (`ID`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
  CREATE TABLE IF NOT EXISTS `employee_job`
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`employee_job_ID` int NOT NULL,
     `employee_job_JID` int NOT NULL,
     PRIMARY KEY(`employee_job_ID`,`employee_job_JID`),
-    FOREIGN KEY (`employee_job_ID`) REFERENCES `employee`(`ID`),
-    FOREIGN KEY (`employee_job_JID`) REFERENCES `job_role`(`JID`)
+    FOREIGN KEY (`employee_job_ID`) REFERENCES `employee`(`ID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`employee_job_JID`) REFERENCES `job_role`(`JID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
  CREATE TABLE IF NOT EXISTS `account`
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `password` varchar(256) NOT NULL,
     `employee_ID` int NOT NULL,
     PRIMARY KEY(`AID`),
-    FOREIGN KEY (`employee_ID`) REFERENCES `employee` (`ID`)
+    FOREIGN KEY (`employee_ID`) REFERENCES `employee` (`ID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
  CREATE TABLE IF NOT EXISTS `product`
@@ -105,9 +105,9 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `bill_date` DATE NOT NULL, -- ngày nhập
     `bill_AID` int NOT NULL DEFAULT 1, -- default account có ID = 1 -> An
     PRIMARY KEY (`BID`),
-    FOREIGN KEY (`bill_store`) REFERENCES `store` (`SID`),
-    FOREIGN KEY (`bill_AID`) REFERENCES `account` (`AID`),
-    FOREIGN KEY (`bill_phone_cus`) REFERENCES `customer`  (`phone`) ON UPDATE CASCADE
+    FOREIGN KEY (`bill_store`) REFERENCES `store` (`SID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`bill_AID`) REFERENCES `account` (`AID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`bill_phone_cus`) REFERENCES `customer`  (`phone`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
  CREATE TABLE IF NOT EXISTS `product_bill`
@@ -115,8 +115,8 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`product_PID` int NOT NULL,
     `bill_BID` int NOT NULL,
     PRIMARY KEY (`product_PID`,`bill_BID`),
-    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`),
-    FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`)
+    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
   CREATE TABLE IF NOT EXISTS `product_bill_info`
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `product_bill_info_quantity` int NOT NULL,
     `product_bill_info_price` int NOT NULL,
     PRIMARY KEY (`product_bill_info_PID`,`product_bill_info_BID`,`product_bill_info_quantity`,`product_bill_info_price`),
-    FOREIGN KEY (`product_bill_info_PID`,`product_bill_info_BID`) REFERENCES `product_bill` (`product_PID`,`bill_BID`)
+    FOREIGN KEY (`product_bill_info_PID`,`product_bill_info_BID`) REFERENCES `product_bill` (`product_PID`,`bill_BID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
  CREATE TABLE IF NOT EXISTS `gift`
@@ -144,8 +144,8 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `quantity` int NOT NULL,
     `date` DATE NOT NULL,
     PRIMARY KEY (`customer_phone`,`gift_GID`),
-    FOREIGN KEY (`customer_phone`) REFERENCES `customer` (`phone`) ON UPDATE CASCADE,
-    FOREIGN KEY (`gift_GID`) REFERENCES `gift` (`GID`)
+    FOREIGN KEY (`customer_phone`) REFERENCES `customer` (`phone`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`gift_GID`) REFERENCES `gift` (`GID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
  CREATE TABLE IF NOT EXISTS `store_product`
@@ -153,8 +153,8 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`product_PID` int NOT NULL,
     `store_SID` int NOT NULL,
     PRIMARY KEY(`product_PID`,`store_SID`),
-    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`),
-    FOREIGN KEY (`store_SID`) REFERENCES `store` (`SID`)
+    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`store_SID`) REFERENCES `store` (`SID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
  CREATE TABLE IF NOT EXISTS `sup_material`
@@ -162,8 +162,8 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
 	`material_MID` int NOT NULL,
     `sup_supID` int NOT NULL, 
     PRIMARY KEY (`material_MID`,`sup_supID`),
-    FOREIGN KEY (`material_MID`) REFERENCES `material` (`MID`),
-    FOREIGN KEY (`sup_supID`) REFERENCES `supplier` (`supID`)
+    FOREIGN KEY (`material_MID`) REFERENCES `material` (`MID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`sup_supID`) REFERENCES `supplier` (`supID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
  CREATE TABLE IF NOT EXISTS `recipe`
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `employee_phone`
     `RID` int NOT NULL,
     `recipe_des` longtext,
     PRIMARY KEY (`product_PID`,`RID`),
-    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`)
+    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`) ON UPDATE CASCADE ON DELETE RESTRICT
  );
  
 --  MAYBE WRONG
@@ -183,8 +183,8 @@ CREATE TABLE IF NOT EXISTS `recipe_material`
     `recipe_RID` int NOT NULL,
     `quantity` int NOT NULL,
     PRIMARY KEY (`material_MID`,`product_PID`,`recipe_RID`),
-    FOREIGN KEY (`product_PID`,`recipe_RID`) REFERENCES `recipe` (`product_PID`,`RID`),
-    FOREIGN KEY (`material_MID`) REFERENCES `material` (`MID`) -- moi them
+    FOREIGN KEY (`product_PID`,`recipe_RID`) REFERENCES `recipe` (`product_PID`,`RID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`material_MID`) REFERENCES `material` (`MID`) ON UPDATE CASCADE ON DELETE RESTRICT -- moi them
 );
 
 CREATE TABLE IF NOT EXISTS `time_store`
@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS `time_store`
     `close_time` TIME NOT NULL,
     `date` INT NOT NULL,
     PRIMARY KEY (`time_store_SID`,`open_time`,`close_time`,`date`),
-    FOREIGN KEY (`time_store_SID`) REFERENCES `store` (`SID`)
+    FOREIGN KEY (`time_store_SID`) REFERENCES `store` (`SID`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `coupoun`
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `coupoun_product`
 	`KID` int NOT NULL,
     `coupoun_product_quantity` int NOT NULL,
     PRIMARY KEY (`KID`),
-    FOREIGN KEY (`KID`) REFERENCES `coupoun` (`KID`)
+    FOREIGN KEY (`KID`) REFERENCES `coupoun` (`KID`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `coupoun_bill`
@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `coupoun_bill`
     `flag_percent` TINYINT(1) ,
     `percent_value` int,
     `coupoun_bill_max_discount` int NOT NULL,
-    FOREIGN KEY (`KID`) REFERENCES `coupoun` (`KID`)
+    FOREIGN KEY (`KID`) REFERENCES `coupoun` (`KID`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `product_coupoun_product`
@@ -234,8 +234,8 @@ CREATE TABLE IF NOT EXISTS `product_coupoun_product`
 	`product_PID` int NOT NULL,
     `coupoun_KID` int NOT NULL,
     PRIMARY KEY (`product_PID`,`coupoun_KID`),
-    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`),
-    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_product` (`KID`)
+    FOREIGN KEY (`product_PID`) REFERENCES `product` (`PID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_product` (`KID`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
@@ -244,8 +244,8 @@ CREATE TABLE IF NOT EXISTS `bill_coupoun_bill`
     `coupoun_KID` int NOT NULL,
     `discount_value` int NOT NULL,
     PRIMARY KEY (`bill_BID`),
-    FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`),
-    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_bill` (`KID`)
+    FOREIGN KEY (`bill_BID`) REFERENCES `bill` (`BID`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`coupoun_KID`) REFERENCES `coupoun_bill` (`KID`) ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
 -- TRIGGER
@@ -355,23 +355,23 @@ DELIMITER ;
 
 -- FUNCTION
 -- Function (1)
--- input: storeID, startDate, endDate
+-- input: store_ID, start_date, end_date
 -- output: tổng doanh thu
 DELIMITER //
 
-CREATE FUNCTION CalculateTotalRevenueAtStore(storeID INT, startDate DATE, endDate DATE) RETURNS DECIMAL(10, 2)
+CREATE FUNCTION CalculateTotalRevenueAtStore(store_ID INT, start_date DATE, end_date DATE) RETURNS DECIMAL(10, 2)
 READS SQL DATA
 BEGIN
     DECLARE totalRevenue DECIMAL(10, 2);
 
     -- Check if the store exists
-    IF NOT EXISTS (SELECT 1 FROM store WHERE SID = storeID) THEN
+    IF NOT EXISTS (SELECT 1 FROM store WHERE SID = store_ID) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Store does not exist in the database.';
     END IF;
 
     -- Check if the end date is later than the start date
-    IF endDate < startDate THEN
+    IF end_date < start_date THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'End date must be later than start date.';
     END IF;
@@ -379,7 +379,7 @@ BEGIN
     SELECT SUM(bill_sum)
     INTO totalRevenue
     FROM bill
-    WHERE bill_date BETWEEN startDate AND endDate AND bill_store = storeID;
+    WHERE bill_date BETWEEN start_date AND end_date AND bill_store = store_ID;
 
     IF totalRevenue IS NULL THEN
         SET totalRevenue = 0.00;
@@ -392,27 +392,27 @@ DELIMITER ;
 
 
 -- Function (2)
--- input: storeID, startDate, endDate
+-- input: store_ID, start_date, end_date
 -- output: tổng số lượng sản phẩm được bán
 DELIMITER //
 
 CREATE FUNCTION CalculateSumProductSales(
-    storeID INT,
-    startDate DATE,
-    endDate DATE
+    store_ID INT,
+    start_date DATE,
+    end_date DATE
 ) RETURNS DECIMAL(10, 2)
 READS SQL DATA
 BEGIN
     DECLARE totalSales DECIMAL(10, 2);
 
     -- Check if the store exists
-    IF NOT EXISTS (SELECT 1 FROM store WHERE SID = storeID) THEN
+    IF NOT EXISTS (SELECT 1 FROM store WHERE SID = store_ID) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Store does not exist in the database.';
     END IF;
 
     -- Check if the end date is greater than or equal to the start date
-    IF endDate < startDate THEN
+    IF end_date < start_date THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'End date must be greater than or equal to the start date.';
     END IF;
@@ -423,14 +423,14 @@ BEGIN
     FROM product_bill_info pbi
     JOIN product_bill pb ON pbi.product_bill_info_PID = pb.product_PID AND pbi.product_bill_info_BID = pb.bill_BID
     JOIN bill b ON pb.bill_BID = b.BID
-    WHERE b.bill_store = storeID AND b.bill_date BETWEEN startDate AND endDate;
+    WHERE b.bill_store = store_ID AND b.bill_date BETWEEN start_date AND end_date;
     RETURN totalSales;
 END //
 
 DELIMITER ;
 
 -- Function (3)
--- input: storeID, startDate, endDate
+-- input: store_ID, start_date, end_date
 -- output: productID
 DELIMITER //
 
@@ -516,7 +516,7 @@ END //
 DELIMITER ;
 
 -- Procedure (1)
--- input: storeID, startDate, endDate
+-- input: store_ID, start_date, end_date
 -- output: table có product ID, tên, size, số lượng
 
 DELIMITER //

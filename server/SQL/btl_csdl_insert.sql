@@ -1,4 +1,4 @@
-USE csdl_database;
+USE CSDL_database;
 INSERT INTO `job_role` (`JID`, `job_type`)
 VALUES
     (1, 'Quản lý'),

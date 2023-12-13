@@ -13,13 +13,14 @@ import {
 } from "react-pro-sidebar";
 import "react-pro-sidebar/dist/css/styles.css";
 import { HiPencilAlt, HiOutlineCheck } from "react-icons/hi";
+import { HiOutlineBuildingStorefront } from "react-icons/hi2";
 import {
   FiHome,
   FiLogOut,
-  FiArrowLeftCircle,
-  FiArrowRightCircle,
   FiUsers,
 } from "react-icons/fi";
+// FiArrowLeftCircle,
+//   FiArrowRightCircle,
 
 const SideBar = () => {
   //create initial menuCollapse state using useState hook
@@ -56,6 +57,11 @@ const SideBar = () => {
               <MenuItem icon={<FiHome />}>
                 <Link to="/admin/test_laythongtincanhantubangemployee">
                   Trang chủ
+                </Link>
+              </MenuItem>
+              <MenuItem icon={<HiOutlineBuildingStorefront />}>
+                <Link to="/admin/store">
+                  Cửa hàng
                 </Link>
               </MenuItem>
               <MenuItem icon={<FiUsers />}>

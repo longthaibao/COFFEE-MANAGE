@@ -19,7 +19,7 @@ export default function AdminInfo() {
       try {
         const response = await axios.get(api_url);
         setdata(response.data);
-        console.log(response.data);
+        document.cookie= `storeID=${response.data.Store_ID}; max-age=${15 * 60 * 1000}; domain=localhost; path=/;`
       } catch (error) {
         console.error("Error fetching data:", error);
       }
