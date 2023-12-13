@@ -533,13 +533,13 @@ BEGIN
     DECLARE product_size VARCHAR(1);
     DECLARE total_quantity_sold INT;
   -- Check if the store exists
-    IF NOT EXISTS (SELECT 1 FROM store WHERE SID = storeID) THEN
+    IF NOT EXISTS (SELECT 1 FROM store WHERE SID = store_ID) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Store does not exist in the database.';
     END IF;
 
     -- Check if the end date is greater than or equal to the start date
-    IF endDate < startDate THEN
+    IF end_date < start_date THEN
         SIGNAL SQLSTATE '45001'
         SET MESSAGE_TEXT = 'End date must be greater than or equal to the start date.';
     END IF;
