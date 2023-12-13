@@ -449,7 +449,7 @@ DELIMITER //
 CREATE PROCEDURE GetCustomerData()
 BEGIN
 	SELECT BID, bill_sum,state, bill_store, bill_date,`name`, phone,bill_AID,coupoun_KID, discount_value
-    FROM csdl_database.bill
+    FROM CSDL_database.bill
     JOIN customer ON bill_phone_cus = phone
     LEFT JOIN bill_coupoun_bill bcb ON bcb.bill_BID  = BID;
 END//

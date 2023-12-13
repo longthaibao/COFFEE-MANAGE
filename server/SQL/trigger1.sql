@@ -1,3 +1,5 @@
+USE CSDL_database;
+
 DELIMITER //
 CREATE PROCEDURE show_notification(IN custom_message VARCHAR(255))
 BEGIN
@@ -38,7 +40,7 @@ END;
 DELIMITER ;
 
 
-syntax oke, chua check work hay kh
+-- syntax oke, chua check work hay kh
 
 DELIMITER //
 CREATE TRIGGER check_product_coupoun
