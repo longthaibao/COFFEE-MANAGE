@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Table from "@mui/material/Table";
-import { red } from "@mui/material/colors";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -17,9 +16,6 @@ export default function Thutuc2() {
     const [formData, setFormData] = useState(0);
     const [selectedYear, setSelectedYear] = useState(0);
     const [headers, setHeaders] = useState([]);
-    const [job_type, setJobType] = React.useState("Quản lý");
-    const [job_typeOnClick, setJob_TypeOnClick] = React.useState("Quản lý");
-    const [arrayOfEmp, setArrayOfEmp] = React.useState([]);
     const handleInputChange = (e) => {
         setFormData(e.target.value);
     };
@@ -30,6 +26,11 @@ export default function Thutuc2() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (formData === "" || parseFloat(formData) < 0) {
+          // Show an alert if the field is blank
+            window.alert("Doanh thu không được để trống và phải từ 0 trở lên");
+            return;
+        }
         try {
             const response = await axios.post(APIs.APIadminThutuc2, {
                 revenue: formData,
@@ -45,6 +46,10 @@ export default function Thutuc2() {
             } else {
                 setHeaders([]);
             }
+            const tableElement = document.getElementById("resultTable");
+            if (tableElement) {
+              tableElement.scrollIntoView({ behavior: 'smooth' });
+            }
         } catch (error) {
             console.error('Error submitting form:', error);
         }
@@ -55,75 +60,83 @@ export default function Thutuc2() {
         setHeaders([]);
     };
 
+   
     return (
         <div className="w-full flex justify-center items-center bg-cover">
             <div className="w-full h-222 bg-white rounded-2xl flex items-center flex-col p-4">
-                <h1 className="text-gray-700 text-2xl font-bold">Thống kê doanh thu của các chương trình khuyến mãi</h1>
+                <h1 className="text-gray-700 text-2xl font-bold">Thống kê các chương trình khuyến mãi có Doanh thu (VNĐ) lớn hơn hoặc bằng R theo năm và hiển thị kèm thông tin của Khách hàng đã chi nhiều nhất trong CTKM đó</h1>
                 <Box
-                    component="form"
-                    sx={{
+                  component="form"
+                  sx={{
                     "& .MuiTextField-root": { m: 1, width: "25ch" },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                    encType="multipart/form-data"
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  encType="multipart/form-data"
+                  onSubmit={(e) => {
+                    e.preventDefault(); // Prevent the default form submission
+                    handleSubmit(e); // Your custom form submission logic
+                    const tableElement = document.getElementById("resultTable");
+                    if (tableElement) {
+                      tableElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                 >
-                    <div>
-                        <TextField
-                            id="year"
-                            name="year"
-                            select
-                            onChange={handleYearChange}
-                            label="Theo năm"
-                            value={selectedYear}
-                            SelectProps={{
-                                native: true,
-                            }}
-                            variant="standard"
-                            size="large"
-                        >
-                            {[...Array(new Date().getFullYear() - 2020)].map((_, index) => {
-                                const year = 2021 + index;
-                                return (
-                                    <option key={year} value={year}>
-                                        {year}
-                                    </option>
-                                );
-                            })}
-                            <option value={0}>Tất cả các năm</option>
-                        </TextField>
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="revenue" className="block text-gray-700 text-base font-semibold mb-1">
-                        Có Doanh thu lớn hơn
-                        </label>
-                        <TextField
-                        type="number"
-                        id="revenue"
-                        name="revenue"
-                        required
-                        min={0}
-                        placeholder="Nhập mức doanh thu"
-                        value={formData}
-                        onChange={handleInputChange}
-                        />
-                    </div>
-                    <Button
-                        style={{
-                        backgroundColor: "#1dc1ff",
-                        color: "#FFFFFF",
-                        fontFamily: "sans-serif",
-                        border: "1px solid #1899D6",
-                        fontWeight: 700,
-                        outline: "none",
-                        borderWidth: "0 0 4px",
-                        borderRadius: "16px",
-                        }}
-                        variant="contained"
-                        onClick={handleSubmit}
-                    >
-                        Tìm kiếm
-                    </Button>
+                  <div>
+                      <TextField
+                          id="year"
+                          name="year"
+                          select
+                          onChange={handleYearChange}
+                          label="Chọn năm"
+                          value={selectedYear}
+                          SelectProps={{
+                              native: true,
+                          }}
+                          variant="standard"
+                          size="large"
+                      >
+                          {[...Array(new Date().getFullYear() - 2020)].map((_, index) => {
+                              const year = 2021 + index;
+                              return (
+                                  <option key={year} value={year}>
+                                      {year}
+                                  </option>
+                              );
+                          })}
+                          <option value={0}>Tất cả các năm</option>
+                      </TextField>
+                  </div>
+                  <div className="mb-3">
+                      <TextField
+                          label="Nhập R (VNĐ)"
+                          type="number"
+                          id="revenue"
+                          name="revenue"
+                          required
+                          min={0}
+                          placeholder="Nhập mức doanh thu"
+                          helperText="Hệ thống sẽ lọc ra các CTKM có doanh thu lớn hơn hoặc bằng giá trị bạn chọn"
+                          value={formData}
+                          onChange={handleInputChange}
+                      />
+                  </div>
+                  <Button
+                      style={{
+                      backgroundColor: "#1dc1ff",
+                      color: "#FFFFFF",
+                      fontFamily: "sans-serif",
+                      border: "1px solid #1899D6",
+                      fontWeight: 700,
+                      outline: "none",
+                      borderWidth: "0 0 4px",
+                      borderRadius: "16px",
+                      }}
+                      variant="contained"
+                      onClick={handleSubmit}
+                  >
+                      Tìm kiếm
+                  </Button>
                 </Box>
                 <div className="mb-4 text-gray-600 text-sm text-red-500">
                     NOTE:
@@ -131,7 +144,7 @@ export default function Thutuc2() {
                     <p>Điều kiện áp dụng là số nhỏ là điều kiện áp dụng đối với Khuyến mãi theo sản phẩm</p>
                 </div>
                 {headers.length > 0 && (
-                    <div className="wrapper m-7">
+                    <div id="resultTable" className="wrapper m-7">
                     <TableContainer component={Paper}>
                       <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                         <TableHead>
@@ -158,8 +171,8 @@ export default function Thutuc2() {
                                   key={colIndex}
                                   align="center"
                                   style={{
-                                    color: colIndex % 2 === 0 ? "#ffffff" : "#ffffff",
-                                    backgroundColor: colIndex % 2 === 0 ? "#324960" : "#4FC3A1",
+                                    color: colIndex % 2 === 0 ? "#000000" : "#000000",
+                                    backgroundColor: colIndex % 2 === 0 ? "#ffffff" : "#ffffff",
                                   }}
                                 >
                                   {item[header]}

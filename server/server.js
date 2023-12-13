@@ -11,6 +11,7 @@ const adminInfo = require('./routes/adminInfo')
 const login = require('./routes/login');
 const customer = require('./routes/customer');
 const showInfoEmp = require('./routes/showInfoEmp');
+const order = require('./routes/order');
 const thutuc2 = require('./routes/thutuc2');
 const proRevenue = require('./routes/proRev')
 //init app object
@@ -36,10 +37,8 @@ app.use('/api/admin/thutuc2', thutuc2);
 app.use("/api/admin/showInfoEmp", showInfoEmp);
 app.use('/api/admin/customer', customer);
 app.use('/api/admin/getProRev', proRevenue)
-
+app.use('/api/admin/order', order);
 
 app.listen(process.env.SV_PORT, "localhost", () => {
   console.log(`Example app listening on port ${process.env.SV_PORT}`);
 });
-
-

@@ -1,5 +1,5 @@
 const mysql = require("mysql2/promise");
-const port = process.env.DB_PORT || 3306;
+const port = process.env.DB_PORT || 3307;
 const hostname = process.env.DB_HOST || "localhost";
 const username = process.env.DB_USER || "root";
 const password = process.env.DB_PASS || "";

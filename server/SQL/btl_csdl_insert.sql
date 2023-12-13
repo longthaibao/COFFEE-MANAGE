@@ -1,11 +1,11 @@
 USE CSDL_database;
--- INSERT INTO `job_role` (`JID`, `job_type`)
--- VALUES
---     (1, 'Quản lý'),
---     (2, 'Thu nhân'),
---     (3, 'Pha chế'),
---     (4, 'Bảo vệ'),
---     (5, 'Tạp vụ');
+INSERT INTO `job_role` (`JID`, `job_type`)
+VALUES
+    (1, 'Quản lý'),
+    (2, 'Thu ngân'),
+    (3, 'Pha chế'),
+    (4, 'Bảo vệ'),
+    (5, 'Tạp vụ');
     
 -- INSERT INTO `store` (`SID`, `store_name`, `store_phone`, `store_des`, `store_add`)
 -- VALUES
@@ -29,13 +29,13 @@ USE CSDL_database;
 --     (2, '07:30:00', '18:00:00', 7),
 --     (2, '07:30:00', '18:00:00', 8);
 
--- INSERT INTO `employee` (`ID`, `employee_name`, `employee_gender`, `employee_email`, `employee_SID`, `employee_MID`)
--- VALUES
---     (1, 'Lìu Ngọc Yến', 'Nữ', 'yenliu@gmail.com', 2, 1),
---     (2, 'Lê Quốc An', 'Nam', 'anlequoc@gmail.com', 1, 2),
---     (3, 'Thái Bảo Long', 'Nam', 'longthaibao@gmail.com', 1, 2),
---     (4, 'Nguyễn Ngọc Bảo Châu', 'Nữ', 'chaunguyen@gmail.com', 2, 1),
---     (5, 'Đặng Phan Minh Phúc', 'Nam', 'phucminh@gmail.com',2,1);
+INSERT INTO `employee` (`ID`, `employee_name`, `employee_gender`, `employee_email`, `employee_SID`, `employee_MID`)
+VALUES
+    (1, 'Lìu Ngọc Yến', 'Nữ', 'yenliu@gmail.com', 2, NULL),
+    (2, 'Lê Quốc An', 'Nam', 'anlequoc@gmail.com', 1, NULL),
+    (3, 'Thái Bảo Long', 'Nam', 'longthaibao@gmail.com', 1, 2),
+    (4, 'Nguyễn Ngọc Bảo Châu', 'Nữ', 'chaunguyen@gmail.com', 2, 1),
+    (5, 'Đặng Phan Minh Phúc', 'Nam', 'phucminh@gmail.com', 2, 1);
 
 -- INSERT INTO `employee_phone` (`employee_phone_ID`, `employee_phone_phone`)
 -- VALUES
@@ -46,60 +46,57 @@ USE CSDL_database;
 --     (4, '0902351447'),
 --     (5, '0795462341');
 
--- INSERT INTO `employee_job` (`employee_job_ID`, `employee_job_JID`)
--- VALUES
---     (1, 1),
---     (1, 2),
---     (2, 1),
---     (2, 2),
---     (3, 4),
---     (4, 3),
---     (5, 4);
+INSERT INTO `employee_job` (`employee_job_ID`, `employee_job_JID`)
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 1),
+    (2, 2),
+    (3, 4),
+    (4, 3),
+    (5, 5);
 
--- INSERT INTO `account` (`AID`, `username`, `password`, `employee_ID`)
--- VALUES
---     (1, 'lequocan', '1234567', 2),
---     (2, 'liungocyen', '7654321', 1);
+INSERT INTO `account` (`AID`, `username`, `password`, `employee_ID`)
+VALUES
+    (1, 'lequocan', SHA2(CONCAT('1234567', 'fc45c92ac5ad37b42824ea724d2f8f32'), 256), 2),
+    (2, 'liungocyen', SHA2(CONCAT('7654321', 'fc45c92ac5ad37b42824ea724d2f8f32'), 256), 1);
 
+INSERT INTO `product` (`PID`, `product_name`, `product_price`, `product_size`)
+VALUES
+	(1, 'Espresso', 45000, 'M'),
+    (2, 'Espresso', 55000, 'L'),
+    (3, 'Cappuccino', 45000, 'M'),
+    (4, 'Cappuccino', 55000, 'L'),
+    (5, 'Latte', 48000, 'M'),
+    (6, 'Latte', 57000, 'L'),
+    (7, 'Mocha', 40000, 'M'),
+    (8, 'Mocha', 48000, 'L'),
+    (9, 'Americano', 45000, 'M'),
+    (10, 'Americano', 55000, 'L');
+    -- Xóa các sản phẩm từ 11-30 vì quá nhiều
 
-
--- INSERT INTO `product` (`PID`, `product_name`, `product_price`, `product_size`, `product_image`)
--- VALUES
--- 	(1, 'Espresso', 45000, 'M', 'espresso_image.jpg'),
---     (2, 'Espresso', 55000, 'L', 'espresso_image.jpg'),
---     (3, 'Cappuccino', 45000, 'M', 'cappuccino_image.jpg'),
---     (4, 'Cappuccino', 55000, 'L', 'cappuccino_image.jpg'),
---     (5, 'Latte', 48000, 'M', 'latte_image.jpg'),
---     (6, 'Latte', 57000, 'L', 'latte_image.jpg'),
---     (7, 'Mocha', 40000, 'M', 'mocha_image.jpg'),
---     (8, 'Mocha', 48000, 'L', 'mocha_image.jpg'),
---     (9, 'Americano', 45000, 'M', 'americano_image.jpg'),
---     (10, 'Americano', 55000, 'L', 'americano_image.jpg'),
---     (11, 'Flat White', 50000, 'M', 'flat_white_image.jpg'),
---     (12, 'Flat White', 51000, 'L', 'flat_white_image.jpg'),
---     (13, 'Caramel Macchiato', 50000, 'M', 'caramel_macchiato_image.jpg'),
---     (14, 'Caramel Macchiato', 58000, 'L', 'caramel_macchiato_image.jpg'),
---     (15, 'Iced Coffee', 30000, 'M', 'iced_coffee_image.jpg'),
---     (16, 'Iced Coffee', 35000, 'L', 'iced_coffee_image.jpg'),
---     (17, 'Affogato', 40000, 'M', 'affogato_image.jpg'),
---     (18, 'Affogato', 50000, 'L', 'affogato_image.jpg'),
---     (19, 'Vietnamese Coffee', 30000, 'M', 'vietnamese_coffee_image.jpg'),
---     (20, 'Vietnamese Coffee', 35000, 'L', 'vietnamese_coffee_image.jpg'),
---     (21, 'Cappuccino Light', 45000, 'M', 'cappuccino_light_image.jpg'),
---     (22, 'Cappuccino Light', 50000, 'L', 'cappuccino_light_image.jpg'),
---     (23, 'Hazelnut Latte', 45000, 'M', 'hazelnut_latte_image.jpg'),
---     (24, 'Hazelnut Latte', 56000, 'L', 'hazelnut_latte_image.jpg'),
---     (25, 'Decaf Espresso', 45000, 'M', 'decaf_espresso_image.jpg'),
---     (26, 'Decaf Espresso', 54000, 'L', 'decaf_espresso_image.jpg'),
---     (27, 'Iced Mocha', 50000, 'M', 'iced_mocha_image.jpg'),
---     (28, 'Iced Mocha', 60000, 'L', 'iced_mocha_image.jpg'),
---     (29, 'Caramel Iced Latte', 30000, 'M', 'caramel_iced_latte_image.jpg'),
---     (30, 'Caramel Iced Latte', 40000, 'L', 'caramel_iced_latte_image.jpg');
-
--- INSERT INTO `store_product` (`product_PID`, `store_SID`)
--- VALUES
---     (1, 1),
---     (2, 2);
+INSERT INTO `store_product` (`product_PID`, `store_SID`)
+VALUES
+    (1, 1),
+    (2, 1),
+    (3, 1),
+    (4, 1),
+    (5, 1),
+    (6, 1),
+    (7, 1),
+    (8, 1),
+    (9, 1),
+    (10, 1),
+    (1, 2),
+    (2, 2),
+    (3, 2),
+    (4, 2),
+    (5, 2),
+    (6, 2),
+    (7, 2),
+    (8, 2),
+    (9, 2),
+    (10, 2);
 
 -- INSERT INTO `material` (`MID`, `material_name`, `material_type`)
 -- VALUES
@@ -124,38 +121,66 @@ USE CSDL_database;
 --     (2, 'Nguyên liệu Nguyên An', '1166 Cách Mạng Tháng 8, Phường 4, Quận Tân Bình, TPHCM', '0916635038 ', 'nguyenlieuphachesi@gmail.com'),
 --     (3, 'Bartenders’ Mart Nhất Hương ', '61A Trần Quang Diệu, Phường 13, Quận 3, TPHCM', '0283812033', 'dungcubarcafe@gmail.com');
 
--- INSERT INTO `sup_material` (`material_MID`, `sup_supID`)
--- VALUES
---     (1, 1),
---     (2, 2);
+INSERT INTO `sup_material` (`material_MID`, `sup_supID`)
+VALUES
+    (1, 1),
+    (2, 1),
+    (3, 1),
+    (4, 1),
+    (5, 2),
+    (6, 2),
+    (7, 2),
+    (8, 2),
+    (9, 3),
+    (10, 3),
+    (11, 3),
+    (12, 3),
+    (13, 3),
+    (14, 3);
 
--- INSERT INTO `recipe` (`product_PID`, `RID`, `recipe_des`)
--- VALUES
---     (1, 1, 'Recipe for Product A'),
---     (2, 2, 'Recipe for Product B');
+INSERT INTO `recipe` (`product_PID`, `RID`, `recipe_des`)
+VALUES
+    (1, 1, 'Công thức của Espresso size M'),
+    (2, 2, 'Công thức của Cappuccino size M'),
+    (3, 3, 'Công thức của Latte size M'),
+    (4, 4, 'Công thức của Mocha size M'),
+    (5, 5, 'Công thức của Americano size M'),
+    (6, 1, 'Công thức của Espresso size L'),
+    (7, 2, 'Công thức của Cappuccino size L'),
+    (8, 3, 'Công thức của Latte size L'),
+    (9, 4, 'Công thức của Mocha size L'),
+    (10, 5, 'Công thức của Americano size L');
 
--- INSERT INTO `recipe_material` (`material_MID`, `product_PID`, `recipe_RID`, `quantity`)
--- VALUES
---     (1, 1, 1, 3),
---     (2, 2, 2, 4);
+INSERT INTO `recipe_material` (`material_MID`, `product_PID`, `recipe_RID`, `quantity`)
+VALUES
+    (1, 1, 1, 100),
+    (1, 2, 2, 200),
+    (1, 3, 3, 100),
+    (1, 4, 4, 200),
+    (1, 5, 5, 100),
+    (1, 6, 1, 200),
+    (1, 7, 2, 100),
+    (1, 8, 3, 200),
+    (1, 9, 4, 100),
+    (1, 10, 5, 200);
 
--- INSERT INTO `coupoun` (`KID`, `coupoun_name`, `coupoun_des`, `coupoun_quantity_limit`, `coupoun_used_quantity`, `coupoun_start_date`, `coupoun_end_date`, `conditions`)
--- VALUES
---     (1, 'Chương trình khuyến mãi Tết Nguyên Đán 2021', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 3 tặng 1 với một số sản phẩm nhất định', 30, 0, '2021-01-15', '2021-02-15', 3),
---     (2, 'Chương trình khuyến mãi Hè Sôi Động 2021', 'Giảm giá cho các sản phẩm mùa hè', 40, 2, '2021-06-01', '2021-06-30', 35000),
---     (3, 'Chương trình khuyến mãi Back-to-School 2021', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, 0, '2021-09-01', '2021-09-30', 4),
---     (4, 'Chương trình khuyến mãi Black Friday 2021', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, 3, '2021-11-15', '2021-11-30', 50000),
---     (5, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2021', 'Hấp dẫn khi mua sắm cuối năm', 35, 6, '2021-12-10', '2021-12-15', 50000),
---     (6, 'Chương trình khuyến mãi Tết Nguyên Đán 2022', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 5 tặng 2 với một số sản phẩm nhất định', 30, 0, '2022-01-15', '2022-02-15', 5),
---     (7, 'Chương trình khuyến mãi Hè Sôi Động 2022', 'Giảm giá cho các sản phẩm mùa hè: Mua 5 tặng 1 với một số sản phẩm nhất định', 40, 0, '2022-06-01', '2022-06-30', 5),
---     (8, 'Chương trình khuyến mãi Back-to-School 2022', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, 0, '2022-09-01', '2022-09-30', 4),
---     (9, 'Chương trình khuyến mãi Black Friday 2022', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, 0, '2022-11-15', '2022-11-30', 40000),
---     (10, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2022', 'Hấp dẫn khi mua sắm cuối năm', 35, 1, '2022-12-01', '2022-12-15', 70000),
---     (11, 'Chương trình khuyến mãi Tết Nguyên Đán 2023', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 2 tặng 1 với một số sản phẩm nhất định', 30, 0, '2023-01-15', '2023-02-15', 2),
---     (12, 'Chương trình khuyến mãi Hè Sôi Động 2023', 'Giảm giá cho các sản phẩm mùa hè', 40, 1, '2023-06-01', '2023-06-30', 130000),
---     (13, 'Chương trình khuyến mãi Back-to-School 2023', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, 0, '2023-09-01', '2023-09-30', 4),
---     (14, 'Chương trình khuyến mãi Black Friday 2023', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, 2, '2023-11-15', '2023-11-30', 150000),
---     (15, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2023', 'Hấp dẫn khi mua sắm cuối năm', 35, 2, '2023-12-01', '2023-12-15', 40000);
+INSERT INTO `coupoun` (`KID`, `coupoun_name`, `coupoun_des`, `coupoun_quantity_limit`, `coupoun_start_date`, `coupoun_end_date`, `conditions`)
+VALUES
+    (1, 'Chương trình khuyến mãi Tết Nguyên Đán 2021', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 3 tặng 1 với một số sản phẩm nhất định', 30, '2021-01-15', '2021-02-14', 3),
+    (2, 'Chương trình khuyến mãi Hè Sôi Động 2021', 'Giảm giá cho các sản phẩm mùa hè', 40, '2021-06-01', '2021-06-30', 35000),
+    (3, 'Chương trình khuyến mãi Back-to-School 2021', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, '2021-09-01', '2021-09-30', 4),
+    (4, 'Chương trình khuyến mãi Black Friday 2021', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, '2021-11-15', '2021-11-30', 50000),
+    (5, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2021', 'Hấp dẫn khi mua sắm cuối năm', 35, '2021-12-10', '2021-12-15', 50000),
+    (6, 'Chương trình khuyến mãi Tết Nguyên Đán 2022', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 5 tặng 2 với một số sản phẩm nhất định', 30, '2022-01-15', '2022-02-14', 5),
+    (7, 'Chương trình khuyến mãi Hè Sôi Động 2022', 'Giảm giá cho các sản phẩm mùa hè: Mua 5 tặng 1 với một số sản phẩm nhất định', 40, '2022-06-01', '2022-06-30', 5),
+    (8, 'Chương trình khuyến mãi Back-to-School 2022', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, '2022-09-01', '2022-09-30', 4),
+    (9, 'Chương trình khuyến mãi Black Friday 2022', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, '2022-11-15', '2022-11-30', 40000),
+    (10, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2022', 'Hấp dẫn khi mua sắm cuối năm', 35, '2022-12-01', '2022-12-15', 70000),
+    (11, 'Chương trình khuyến mãi Tết Nguyên Đán 2023', 'Nhận ngay ưu đãi hấp dẫn cho năm mới: Mua 2 tặng 1 với một số sản phẩm nhất định', 30, '2023-01-15', '2023-02-14', 2),
+    (12, 'Chương trình khuyến mãi Hè Sôi Động 2023', 'Giảm giá cho các sản phẩm mùa hè', 40, '2023-06-01', '2023-06-30', 130000),
+    (13, 'Chương trình khuyến mãi Back-to-School 2023', 'Đặc quyền cho học sinh, sinh viên: Mua 4 tặng 1 với một số sản phẩm nhất định', 25, '2023-09-01', '2023-09-30', 4),
+    (14, 'Chương trình khuyến mãi Black Friday 2023', 'Mua sắm với giá siêu ưu đãi vào Black Friday', 15, '2023-11-15', '2023-11-30', 150000),
+    (15, 'Chương trình khuyến mãi Mua Sắm Cuối Năm 2023', 'Hấp dẫn khi mua sắm cuối năm', 35, '2023-12-01', '2023-12-15', 40000);
 
 -- INSERT INTO `coupoun_product` (`KID`, `coupoun_product_quantity`)
 -- VALUES
@@ -201,69 +226,72 @@ USE CSDL_database;
 --     (15, 0, 1, 5500, 0, 0); -- 40000
 
 
--- INSERT INTO `customer` (`phone`, `name`, `score`)
--- VALUES
---     ('0962154875', 'Hương Giang', 100),
---     ('0987653425', 'Nam Anh', 10),
---     ('0953427162', 'Thái Học', 0),
---     ('0762345617', 'Khánh', 30),
---     ('0796473829', 'Đạt', 50),
---     ('0912435674', 'Sỹ', 120),
---     ('0905342671', 'Nhật', 170),
---     ('0934256738', 'Ngọc Ánh', 150);
+INSERT INTO `customer` (`phone`, `name`)
+VALUES
+    ('0962154875', 'Hương Giang'),
+    ('0987653425', 'Nam Anh'),
+    ('0953427162', 'Thái Học'),
+    ('0762345617', 'Khánh'),
+    ('0796473829', 'Đạt'),
+    ('0912435674', 'Sỹ'),
+    ('0905342671', 'Nhật'),
+    ('0934256738', 'Ngọc Ánh');
 
--- INSERT INTO `bill` (`BID`, `state`, `bill_sum`, `bill_store`, `bill_phone_cus`, `bill_date`)
--- VALUES
---     (1, 0, 0, 1, '0962154875','2021-06-15'),
---     (2, 0, 0, 2, '0962154875','2021-06-16'),
---     (3, 0, 0, 1, '0962154875', '2021-06-29'),
---     (4, 0, 0, 2, '0962154875', '2021-09-02'),
---     (5, 0, 0, 1, '0962154875', '2021-09-15'),
---     (6, 0, 0, 2, '0962154875', '2021-10-02'),
--- 	(7, 0, 0, 1, '0962154875','2021-10-03'),
--- 	(8, 0, 0, 1, '0962154875','2021-10-5'),
--- 	(9, 0, 0, 1, '0987653425', '2021-11-17'),
--- 	(10, 0, 0, 2, '0987653425', '2021-11-20'),
--- 	(11, 0, 0, 1, '0987653425', '2021-11-25'),
--- 	(12, 0, 0, 1, '0987653425', '2021-11-26'),
--- 	(13, 0, 0, 1, '0987653425', '2021-11-29'),
--- 	(14, 0, 0, 1, '0987653425', '2021-12-05'),
--- 	(15, 0, 0, 1, '0953427162', '2021-12-11'),
--- 	(16, 0, 0, 2, '0953427162','2021-12-11'),
--- 	(17, 0, 0, 1, '0953427162', '2021-12-12'),
--- 	(18, 0, 0, 2, '0953427162','2021-12-13'),
--- 	(19, 0, 0, 1, '0953427162','2021-12-13'),
--- 	(20, 0, 0, 2, '0953427162','2021-12-14'),
--- 	(21, 0, 0, 1, '0953427162','2021-12-14'),
--- 	(22, 0, 0, 2, '0762345617', '2021-12-15'),
--- 	(23, 0, 0, 1, '0762345617', '2021-12-15'),
--- 	(24, 0, 0, 2, '0762345617', '2021-12-30'),
--- 	(25, 0, 0, 1, '0762345617', '2021-12-31'),
--- 	(26, 0, 0, 2, '0762345617', '2022-02-01'),
--- 	(27, 0, 0, 1, '0762345617', '2022-04-30'),
--- 	(28, 0, 0, 2, '0762345617','2022-06-01'),
--- 	(29, 0, 0, 1, '0796473829', '2022-06-02'),
--- 	(30, 0, 0, 2, '0796473829', '2022-06-15'),
--- 	(31, 0, 0, 1, '0796473829','2022-09-29'),
--- 	(32, 0, 0, 2, '0796473829', '2022-11-22'),
--- 	(33, 0, 0, 1, '0796473829', '2022-12-14'),
--- 	(34, 0, 0, 2, '0796473829', '2023-01-16'),
--- 	(35, 0, 0, 1, '0796473829', '2023-02-28'),
--- 	(36, 0, 0, 2, '0912435674', '2023-03-30'),
--- 	(37, 0, 0, 1, '0912435674', '2023-06-25'),
--- 	(38, 0, 0, 2, '0912435674', '2023-06-29'),
--- 	(39, 0, 0, 1, '0912435674', '2023-06-30'),
--- 	(40, 0, 0, 2, '0912435674', '2023-09-25'),
--- 	(41, 0, 0, 1, '0912435674', '2023-11-16'),
--- 	(42, 0, 0, 2, '0905342671', '2023-11-27'),
--- 	(43, 0, 0, 1, '0905342671', '2023-11-28'),
--- 	(44, 0, 0, 2, '0905342671', '2023-11-29'),
--- 	(45, 0, 0, 1, '0905342671', '2023-11-30'),
--- 	(46, 0, 0, 2, '0905342671', '2023-12-02'),
--- 	(47, 0, 0, 1, '0905342671', '2023-12-02'),
--- 	(48, 0, 0, 2, '0934256738', '2023-12-03'),
--- 	(49, 0, 0, 1, '0934256738', '2023-12-10'),
--- 	(50, 0, 0, 2, '0934256738', '2023-12-14');
+INSERT INTO `bill` (`BID`, `bill_phone_cus`, `bill_date`)
+VALUES
+    (1, '0962154875','2021-06-15'),
+    (2, '0987653425','2021-06-16'),
+    (3, '0953427162', '2021-06-29'),
+    (4, '0762345617', '2021-09-02'),
+    (5, '0796473829', '2021-09-15'),
+    (6, '0912435674', '2021-10-02'),
+	(7, '0905342671','2021-10-03'),
+	(8, '0934256738','2021-10-5'),
+	(9, '0987653425', '2021-11-17'),
+	(10, '0987653425', '2021-11-20'),
+	(11, '0953427162', '2021-11-25'),
+	(12, '0762345617', '2021-11-26'),
+	(13, '0796473829', '2021-11-29'),
+	(14, '0912435674', '2021-12-05'),
+	(15, '0905342671', '2021-12-11'),
+	(16, '0934256738','2021-12-11'),
+	(17, '0953427162', '2021-12-12'),
+	(18, '0987653425','2021-12-13'),
+	(19, '0953427162','2021-12-13'),
+	(20, '0762345617','2021-12-14'),
+	(21, '0796473829','2021-12-14'),
+	(22, '0912435674', '2021-12-15'),
+	(23, '0905342671', '2021-12-15'),
+	(24, '0934256738', '2021-12-30'),
+	(25, '0762345617', '2021-12-31');
+
+INSERT INTO `bill` (`BID`, `bill_phone_cus`, `bill_date`, `bill_store`, `bill_AID`)
+VALUES
+	(26, '0987653425', '2022-02-01', 2, 2),
+	(27, '0953427162', '2022-04-30', 2, 2),
+	(28, '0762345617','2022-06-01', 2, 2),
+	(29, '0796473829', '2022-06-02', 2, 2),
+	(30, '0912435674', '2022-06-15', 2, 2),
+	(31, '0905342671','2022-09-29', 2, 2),
+	(32, '0934256738', '2022-11-22', 2, 2),
+	(33, '0796473829', '2022-12-14', 2, 2),
+	(34, '0987653425', '2023-01-16', 2, 2),
+	(35, '0953427162', '2023-02-28', 2, 2),
+	(36, '0762345617', '2023-03-30', 2, 2),
+	(37, '0796473829', '2023-06-25', 2, 2),
+	(38, '0912435674', '2023-06-29', 2, 2),
+	(39, '0905342671', '2023-06-30', 2, 2),
+	(40, '0934256738', '2023-09-25', 2, 2),
+	(41, '0912435674', '2023-11-16', 2, 2),
+	(42, '0987653425', '2023-11-27', 2, 2),
+	(43, '0953427162', '2023-11-28', 2, 2),
+	(44, '0762345617', '2023-11-29', 2, 2),
+	(45, '0796473829', '2023-11-30', 2, 2),
+	(46, '0912435674', '2023-12-02', 2, 2),
+	(47, '0905342671', '2023-12-02', 2, 2),
+	(48, '0934256738', '2023-12-03', 2, 2),
+	(49, '0934256738', '2023-12-10', 2, 2),
+	(50, '0987653425', '2023-12-14', 2, 2);
 
 
 -- INSERT INTO `product_bill` (`product_PID`, `bill_BID`)
@@ -429,10 +457,20 @@ SET state = 2
 
 INSERT INTO `gift` (`GID`, `gift_name`, `gift_score`)
 VALUES
-    (1, 'Gấu bông', 50),
-    (2, 'Ly giữ nhiệt', 30);
+    (1, '1 Gấu bông', 3000),
+    (2, '1 Ly giữ nhiệt', 1500),
+    (3, '1 Móc chìa khóa', 500),
+    (4, '1 Giá đỡ điện thoại', 700),
+    (5, '1 Cục sạc dự phòng', 5000);
 
 INSERT INTO `customer_gift` (`customer_phone`, `gift_GID`, `quantity`, `date`)
 VALUES
-    ('0762345617', 1, 1, '2023-12-01'),
-    ('0912435674', 2, 2, '2023-12-02');
+    ('0796473829', 2, 2, '2023-12-01'),
+    ('0953427162', 2, 1, '2023-12-02'),
+    ('0962154875', 3, 1, '2023-12-04'),
+    ('0912435674', 1, 1, '2023-12-04'),
+    ('0934256738', 2, 1, '2023-12-05'),
+    ('0934256738', 3, 1, '2023-12-06'),
+    ('0987653425', 3, 1, '2023-12-06'),
+    ('0987653425', 4, 1, '2023-12-06'),
+    ('0905342671', 2, 1, '2023-12-07');

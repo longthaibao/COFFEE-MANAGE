@@ -31,9 +31,9 @@ function Profile({ data }) {
             <h2 className={cx("info-admin-h2")}>Giới tính: {data.Gender}</h2>
           </div>
           <div className={cx("info-admin-2")}>
-            <h2 className={cx("info-admin-h2")}>StoreID: {data.Store_ID}</h2>
+            <h2 className={cx("info-admin-h2")}>Làm việc tại cửa hàng: {data.Store_ID}</h2>
             <h2 className={cx("info-admin-h2")}>
-              ManagerID: {data.Manager_ID}
+              {data.Manager_ID === null ? "Bạn chính là quản lý" : "Người quản lý của bạn: " + data.Manager_ID}
             </h2>
           </div>
           <div className={cx("desc")}></div>
