@@ -499,6 +499,21 @@ END //
 
 DELIMITER ;
 
+DELIMITER //
+
+CREATE FUNCTION IsCouponValid(input_date DATE, coupon_KID INT) RETURNS BOOLEAN DETERMINISTIC
+BEGIN
+    DECLARE is_valid BOOLEAN;
+
+    SELECT 
+        IF(coupoun_used_quantity >= coupoun_quantity_limit OR coupoun_end_date < input_date OR coupoun_start_date > input_date, FALSE, TRUE)
+    INTO is_valid
+    FROM coupoun
+    WHERE KID = coupon_KID;
+    RETURN is_valid;
+END //
+
+DELIMITER ;
 
 -- Procedure (1)
 -- input: storeID, startDate, endDate
