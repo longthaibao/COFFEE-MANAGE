@@ -167,7 +167,7 @@ BEGIN
         E.`employee_name`,
         E.`employee_gender`,
         E.`employee_email`,
-        S.`store_name`,
+        S.`SID`,
         E.`employee_MID`
     INTO
         emp_id,
