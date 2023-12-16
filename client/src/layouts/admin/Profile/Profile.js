@@ -31,9 +31,13 @@ function Profile({ data }) {
             <h2 className={cx("info-admin-h2")}>Giới tính: {data.Gender}</h2>
           </div>
           <div className={cx("info-admin-2")}>
-            <h2 className={cx("info-admin-h2")}>Làm việc tại cửa hàng: {data.Store_ID}</h2>
             <h2 className={cx("info-admin-h2")}>
-              {data.Manager_ID === null ? "Bạn chính là quản lý" : "Người quản lý của bạn: " + data.Manager_ID}
+              Làm việc tại cửa hàng: {data.Store_ID}
+            </h2>
+            <h2 className={cx("info-admin-h2")}>
+              {data.Manager_ID === null
+                ? "Bạn chính là quản lý"
+                : "Người quản lý của bạn: " + data.Manager_ID}
             </h2>
           </div>
           <div className={cx("desc")}></div>
@@ -42,7 +46,7 @@ function Profile({ data }) {
               <FontAwesomeIcon
                 icon={faInstagram}
                 style={{
-                  backgroundColor: "#8bc34a",
+                  backgroundColor: "#b22830",
                   borderRadius: "30%",
                   color: "white",
                   height: "60px",
@@ -53,7 +57,7 @@ function Profile({ data }) {
               <FontAwesomeIcon
                 icon={faFacebook}
                 style={{
-                  backgroundColor: "#8bc34a",
+                  backgroundColor: "#b22830",
                   borderRadius: "30%",
                   color: "white",
                   height: "60px",
@@ -64,7 +68,7 @@ function Profile({ data }) {
               <FontAwesomeIcon
                 icon={faLinkedin}
                 style={{
-                  backgroundColor: "#8bc34a",
+                  backgroundColor: "#b22830",
                   borderRadius: "30%",
                   color: "white",
                   height: "60px",

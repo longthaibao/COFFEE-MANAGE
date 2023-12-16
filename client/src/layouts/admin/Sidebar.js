@@ -1,8 +1,5 @@
 import { Link } from "react-router-dom";
-//import useState hook to create menu collapse state
 import React, { useState } from "react";
-
-//import react pro sidebar components
 import {
   ProSidebar,
   Menu,
@@ -14,14 +11,7 @@ import {
 import "react-pro-sidebar/dist/css/styles.css";
 import { HiPencilAlt, HiOutlineCheck } from "react-icons/hi";
 import { HiOutlineBuildingStorefront } from "react-icons/hi2";
-import {
-  FiHome,
-  FiLogOut,
-  FiUsers,
-} from "react-icons/fi";
-// FiArrowLeftCircle,
-//   FiArrowRightCircle,
-
+import { FiHome, FiLogOut, FiUsers } from "react-icons/fi";
 const SideBar = () => {
   //create initial menuCollapse state using useState hook
   const [menuCollapse, setMenuCollapse] = useState(false);
@@ -36,9 +26,9 @@ const SideBar = () => {
     active ? setActive(true) : setActive(false);
   };
   const logout = async () => {
-		const expirationTime = new Date(Date.now() - 60 * 1000);
-		document.cookie = `admin_cookie_id=null; expires=${expirationTime.toUTCString()}; path=/`;
-		window.location.href = 'http://localhost:3000/login';
+    const expirationTime = new Date(Date.now() - 60 * 1000);
+    document.cookie = `admin_cookie_id=null; expires=${expirationTime.toUTCString()}; path=/`;
+    window.location.href = "http://localhost:3000/login";
   };
   return (
     <>
@@ -46,10 +36,7 @@ const SideBar = () => {
         <ProSidebar collapsed={menuCollapse}>
           <SidebarHeader>
             <div className="logotext">
-              <img
-                src="https://svn.apache.org/repos/asf/lucene.net/branches/3.0.3/branding/logo/lucene-net-icon-512x256.png"
-                alt=""
-              />
+              <img src="/logo.png" alt="" />
             </div>
           </SidebarHeader>
           <SidebarContent>
@@ -60,9 +47,7 @@ const SideBar = () => {
                 </Link>
               </MenuItem>
               <MenuItem icon={<HiOutlineBuildingStorefront />}>
-                <Link to="/admin/store">
-                  Cửa hàng
-                </Link>
+                <Link to="/admin/store">Cửa hàng</Link>
               </MenuItem>
               <MenuItem icon={<FiUsers />}>
                 <Link to="/admin/themxoasua">Danh sách khách hàng</Link>
@@ -76,7 +61,6 @@ const SideBar = () => {
               <MenuItem icon={<HiOutlineCheck />}>
                 <Link to="/admin/hoadon">Quản lý hóa đơn</Link>
               </MenuItem>
-              {/* <MenuItem icon={<BiCog />}>Settings</MenuItem> */}
             </Menu>
           </SidebarContent>
           <SidebarFooter>

@@ -17,7 +17,7 @@
 .card .title {
   padding: 1rem;
   text-align: right;
-  color: green;
+  color: #b22830;
   font-weight: bold;
   font-size: 12px;
 }
@@ -43,7 +43,7 @@
   position: absolute;
   border-radius: 50%;
   border: 6px solid white;
-  background-image: linear-gradient(-60deg, #16a085 0%, #f4d03f 100%);
+  background-image: linear-gradient(-60deg, #b22830 0%, #f4d03f 100%);
   top: 15px;
   left: 29%;
 }
@@ -77,11 +77,11 @@
   font-size: 24px;
   height: 60px;
   margin: 20px;
-  color: #8bc34a;
+  color: #b22830;
   cursor: pointer;
   transition: 0.5s;
   &:hover {
-    color: #4caf50;
+    color: #b22830;
     transform: rotate(22deg);
   }
 }
@@ -91,7 +91,7 @@
 }
 .info-admin-h2 {
   margin: 10px;
-  border: 3px solid #8bc34a;
+  border: 3px solid #b22830;
   border-radius: 10px;
   padding: 7px;
   font-family: sans-serif;
