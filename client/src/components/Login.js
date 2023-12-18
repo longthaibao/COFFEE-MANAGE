@@ -3,7 +3,6 @@ import axios from "axios";
 import APIs from "../util/API";
 
 export default function LoginComponent() {
-
   const [formData, setFormData] = useState({
     id: "lequocan",
     pass: "1234567",
@@ -48,7 +47,6 @@ export default function LoginComponent() {
   useEffect(() => {
     return () => {
       setNotification(null);
-
     };
   }, []);
 
@@ -79,9 +77,12 @@ export default function LoginComponent() {
             className="w-full h-full rounded-2xl border border-gray-200 overflow-hidden px-4 text-base font-semibold bg-gray-200 outline-none"
           />
         </p>
-        <p className="w-80 h-10 rounded-full overflow-hidden bg-[#2563EB] text-[#F5F5F5] cursor-pointer transition duration-300 hover:bg-blue-800 flex items-center justify-center mb-16">
+        <p
+          style={{ backgroundColor: "rgb(83, 56, 44)" }}
+          className="w-80 h-10 rounded-full overflow-hidden text-[#F5F5F5] cursor-pointer transition duration-300 hover:bg-blue-800 flex items-center justify-center mb-16"
+        >
           <input
-            className="cursor-pointer transition duration-300 hover:bg-blue-800"
+            className="cursor-pointer transition duration-300"
             type="submit"
             value="Đăng nhập"
           />

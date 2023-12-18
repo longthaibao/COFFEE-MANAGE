@@ -17,7 +17,7 @@ export default function Layout() {
     const intervalId = setInterval(() => {
       // Xoay giữa các hình ảnh nền
       setCurrentBackground((prev) => (prev + 1) % backgrounds.length);
-    }, 5000); // Thay đổi mỗi 5 giây (đơn vị là milliseconds)
+    }, 4000); // Thay đổi mỗi 5 giây (đơn vị là milliseconds)
 
     return () => clearInterval(intervalId);
   }, []); // Chạy chỉ một lần sau khi component được render

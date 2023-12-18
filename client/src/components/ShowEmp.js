@@ -386,17 +386,19 @@ function ShowEmp() {
       });
   };
   return (
-    <div className="wrapper m-7">
+    <div className="wrapper m-10">
       <ToastContainer autoClose={1000} />
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-around",
+          backgroundColor: "#ffffff",
+          borderRadius: "1px",
         }}
       >
         <Box
-          className="m-8"
+          className="m-8 "
           component="form"
           sx={{
             "& .MuiTextField-root": { m: 1, width: "25ch" },
@@ -429,10 +431,10 @@ function ShowEmp() {
           </div>
           <Button
             style={{
-              backgroundColor: "#1dc1ff",
+              backgroundColor: "rgb(83, 56, 44)",
               color: "#FFFFFF",
               fontFamily: "sans-serif",
-              border: "1px solid #1899D6",
+              borderBottom: "4px solid #431407",
               fontWeight: 700,
               outline: "none",
               borderWidth: "0 0 4px",
@@ -462,10 +464,10 @@ function ShowEmp() {
           >
             <Button
               style={{
-                backgroundColor: "#1dc1ff",
+                backgroundColor: "rgb(83, 56, 44)",
                 color: "#FFFFFF",
                 fontFamily: "sans-serif",
-                border: "1px solid #1899D6",
+                borderBottom: "4px solid #431407",
                 fontWeight: 700,
                 outline: "none",
                 borderWidth: "0 0 4px",
@@ -485,40 +487,38 @@ function ShowEmp() {
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell
-                style={{ color: "#ffffff", backgroundColor: "#324960" }}
-              >
+              <TableCell style={{ color: "#333", backgroundColor: "#ffffff" }}>
                 Loại công việc
               </TableCell>
               <TableCell
                 align="center"
-                style={{ color: "#ffffff", backgroundColor: "#4FC3A1" }}
+                style={{ color: "#333", backgroundColor: "#ffffff" }}
               >
                 ID
               </TableCell>
               <TableCell
                 align="center"
-                style={{ color: "#ffffff", backgroundColor: "#324960" }}
+                style={{ color: "#333", backgroundColor: "#ffffff" }}
               >
                 Tên
               </TableCell>
               <TableCell
                 align="center"
-                style={{ color: "#ffffff", backgroundColor: "#4FC3A1" }}
+                style={{ color: "#333", backgroundColor: "#ffffff" }}
               >
                 Giới tính
               </TableCell>
               <TableCell
                 align="center"
-                style={{ color: "#ffffff", backgroundColor: "#324960" }}
+                style={{ color: "#333", backgroundColor: "#ffffff" }}
               >
                 Email
               </TableCell>
               <TableCell
                 align="center"
                 style={{
-                  color: "#ffffff",
-                  backgroundColor: "#4FC3A1",
+                  color: "#333",
+                  backgroundColor: "#ffffff",
                 }}
               >
                 Chỉnh sửa

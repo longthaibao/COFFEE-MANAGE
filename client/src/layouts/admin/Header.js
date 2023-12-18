@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Header() {
   const [openNav, setOpenNav] = React.useState(false);
-  const navigate = useNavigate();
   const logout = async () => {
     const expirationTime = new Date(Date.now() - 60 * 1000);
     document.cookie = `admin_cookie_id=null; expires=${expirationTime.toUTCString()}; path=/`;
@@ -39,9 +38,14 @@ export default function Header() {
           fontWeight: "bold",
         }}
       >
-        <Link onClick={logout} className="flex items-center m-4">
-          <p className="m-2">Log out</p>
-          <FontAwesomeIcon icon={faRightFromBracket}></FontAwesomeIcon>
+        <Link onClick={logout} className="flex items-center m-4 ">
+          <p className="m-2" style={{ color: "white", fontWeight: "bold" }}>
+            Log out
+          </p>
+          <FontAwesomeIcon
+            icon={faRightFromBracket}
+            style={{ color: "white", fontWeight: "bold" }}
+          ></FontAwesomeIcon>
         </Link>
       </Typography>
     </ul>
